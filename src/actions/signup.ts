@@ -11,21 +11,25 @@ export const signupUser = async (formData: IFormData) => {
 
   try {
     const existingUser = await prisma.user.findUnique({
-      where: {
-        email,
-      },
+      where: { email },
     });
+
     if (existingUser) {
       return { error: 'User with this email already exists' };
     }
+
     const pwHash = await saltAndHashPassword(password);
 
     const user = await prisma.user.create({
       data: { email, password: pwHash },
     });
-    return user;
+
+    return { success: true, userId: user.id };
   } catch (error) {
     console.error('Error signup', error);
-    return { error: 'Error sign up' };
+
+    const message = error instanceof Error ? error.message : JSON.stringify(error);
+
+    return { error: `Sign up failed: ${message}` };
   }
 };
