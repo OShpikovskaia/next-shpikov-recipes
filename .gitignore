@@ -1,0 +1,59 @@
+# Node / package managers
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Ignore other lockfiles
+package-lock.json
+pnpm-lock.yaml
+
+# Next.js builds
+.next/
+out/
+.next.static/
+/.next/cache/
+
+# TypeScript / tests / coverage
+coverage/
+*.tsbuildinfo
+
+# Prisma
+src/generated/prisma/
+prisma/dev.db
+prisma/dev.db-journal
+prisma/test.db
+prisma/test.db-journal
+
+# If you use SQLite / local databases
+*.db
+*.db-journal
+
+# Env / environment config
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# System / IDE / temporary files
+.DS_Store
+__MACOSX/
+Thumbs.db
+
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tmp
+*.log
+
+# Vercel / deployment
+.vercel/
+
+# Miscellaneous
+# Lint/bundler caches and other tool logs
+*.eslintcache
+stylelintcache

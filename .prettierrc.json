@@ -1,0 +1,15 @@
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "semi": true,
+  "printWidth": 100,
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "overrides": [
+    {
+      "files": ["*.json", "*.json5", "*.jsonc"],
+      "options": {
+        "singleQuote": false
+      }
+    }
+  ]
+}

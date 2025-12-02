@@ -1,0 +1,116 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+
+  createAt      DateTime   @default(now()) @map("create_at")
+  updateAt      DateTime   @updatedAt @map("update_at")
+  
+  accounts      Account[]
+  sessions      Session[]
+  
+  @@map("users")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+ 
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@map("sessions")
+}
+ 
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Ingredients {
+  id           String   @id @default(cuid())
+  name         String
+  category     Category
+  unit         Unit
+  pricePerUnit Float?
+  description  String?
+
+  createAt     DateTime   @default(now()) @map("create_at")
+  updateAt     DateTime   @updatedAt @map("update_at")
+  recipes      RecipeIngredient[]
+
+  @@map("ingredients")
+}
+
+enum Category {
+  VEGETABLES
+  FRUITS
+  MEAT
+  DAIRY
+  SPICES
+  OTHER
+}
+
+enum Unit {
+  GRAMS
+  KILOGRAMS
+  LITERS
+  MILLILITERS
+  PIECES
+}
+
+model Recipe {
+  id          String          @id @default(cuid())
+  name        String
+  description String
+  image       String?         @map("image_url")
+  ingredients  RecipeIngredient[]
+
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  id          String          @id @default(cuid())
+  recipe      Recipe          @relation(fields: [recipeId], references: [id])
+  recipeId    String
+  ingredient  Ingredients     @relation(fields: [ingredientId], references: [id])
+  ingredientId String
+  quantity    Float
+
+  @@map("recipe_ingredient")
+}
