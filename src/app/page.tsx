@@ -4,18 +4,22 @@ import Link from 'next/link';
 import { Button } from '@heroui/react';
 
 import RecipeCard from '@/components/common/recipe-card';
+import { useAuthStore } from '@/store/auth.store';
 import { useRecipeStore } from '@/store/recipe.store';
 
 const Home = () => {
   const { recipes, isLoading, error } = useRecipeStore();
+  const { isAuth } = useAuthStore();
 
   return (
     <>
-      <div className="mb-4 flex w-full items-center justify-center">
-        <Link href="/recipes/new">
-          <Button color="primary">Add recipe</Button>
-        </Link>
-      </div>
+      {isAuth && (
+        <div className="mb-4 flex w-full items-center justify-center">
+          <Link href="/recipes/new">
+            <Button color="primary">Add recipe</Button>
+          </Link>
+        </div>
+      )}
 
       {error && <p className="mb-4 text-red-500">{error}</p>}
 
