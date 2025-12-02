@@ -40,7 +40,11 @@ const Header = () => {
             <Link
               color="foreground"
               href={item.href}
-              className={`px-3 py-1 ${isActive ? 'text-blue-500' : 'text-foreground'} hover:text-blu-300 transition-border transition-colors duration-200 hover:rounded-md hover:border hover:border-blue-300`}
+              className={`rounded-md border px-3 py-1 transition-colors duration-200 ${
+                isActive
+                  ? 'border-blue-400 text-blue-500'
+                  : 'text-foreground border-transparent hover:border-blue-300 hover:text-blue-400'
+              } `}
             >
               {item.label}
             </Link>

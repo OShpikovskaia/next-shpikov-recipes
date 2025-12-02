@@ -17,6 +17,13 @@ const INITIAL_STATE = {
   pricePerUnit: '',
   description: '',
 };
+
+const selectionToValue = (keys: Selection): string => {
+  if (keys === 'all') return '';
+  const [first] = Array.from(keys);
+  return first?.toString() ?? '';
+};
+
 const IngredientForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<IngredientsFormData>(INITIAL_STATE);
@@ -26,20 +33,22 @@ const IngredientForm = () => {
   const [isPending, startTransition] = useTransition();
 
   const handleCategoryChange = (keys: Selection) => {
-    const value = Array.from(keys)[0]?.toString() ?? '';
+    const value = selectionToValue(keys);
     setFormData((prev) => ({ ...prev, category: value }));
   };
 
   const handleUnitChange = (keys: Selection) => {
-    const value = Array.from(keys)[0]?.toString() ?? '';
+    const value = selectionToValue(keys);
     setFormData((prev) => ({ ...prev, unit: value }));
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     startTransition(async () => {
       await addIngredient(formData);
       const storeError = useIngredientStore.getState().error;
+
       if (storeError) {
         setError(storeError);
       } else {
@@ -75,7 +84,7 @@ const IngredientForm = () => {
             isRequired
             name="category"
             placeholder="Category"
-            defaultSelectedKeys={formData.category ? [formData.category] : []}
+            selectedKeys={formData.category ? new Set([formData.category]) : new Set([])}
             classNames={{
               trigger: 'bg-default-100 w-full',
               innerWrapper: 'text-sm',

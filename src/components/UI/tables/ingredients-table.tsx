@@ -32,13 +32,17 @@ const IngredientsTable = () => {
     await removeIngredient(id);
   };
 
-  const isDataLoaded = isAuth && !isLoading;
+  if (!isAuth) {
+    return <p className="text-danger mt-4 text-sm">You are not logged in.</p>;
+  }
 
-  if (!isAuth) return <p>You are not logged in.</p>;
+  if (isLoading) {
+    return <p className="text-default-500 mt-4 text-sm">Loading ingredients...</p>;
+  }
 
-  return !isDataLoaded ? (
-    <p>Loading data...</p>
-  ) : (
+  const hasIngredients = ingredients.length > 0;
+
+  return (
     <Table
       aria-label="Ingredients table"
       classNames={{
@@ -56,7 +60,14 @@ const IngredientsTable = () => {
         <TableColumn>Description</TableColumn>
         <TableColumn>Actions</TableColumn>
       </TableHeader>
-      <TableBody>
+
+      <TableBody
+        emptyContent={
+          hasIngredients
+            ? undefined
+            : "You don't have any ingredients yet. Use “Add ingredient” to create one."
+        }
+      >
         {ingredients.map(({ id, name, category, unit, pricePerUnit, description }) => (
           <TableRow key={id}>
             <TableCell>{name}</TableCell>
