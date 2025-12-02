@@ -1,6 +1,7 @@
 'use server';
 
-import type { Ingredients } from '@/generated/prisma/client';
+import type { Ingredients } from '@prisma/client';
+
 import { ingredientSchema } from '@/schema/zod';
 import type { IngredientsFormData } from '@/types/form-data';
 import prisma from '@/utils/prisma';

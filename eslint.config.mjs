@@ -15,7 +15,6 @@ const config = defineConfig([
     'build/**',
     'node_modules/**',
     'coverage/**',
-    'src/generated/**',
     'tailwind.config.js',
     'postcss.config.mjs',
     'prisma.config.ts',

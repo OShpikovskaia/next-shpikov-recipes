@@ -21,7 +21,7 @@ coverage/
 *.tsbuildinfo
 
 # Prisma
-src/generated/prisma/
+src/generated/
 prisma/dev.db
 prisma/dev.db-journal
 prisma/test.db
