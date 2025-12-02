@@ -25,7 +25,6 @@
     "@heroui/system": "^2.4.23",
     "@heroui/theme": "^2.4.23",
     "@prisma/client": "6.19.0",
-    "@prisma/extension-accelerate": "^2.0.2",
     "@tailwindcss/postcss": "^4.1.17",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
