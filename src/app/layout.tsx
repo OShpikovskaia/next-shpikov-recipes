@@ -42,7 +42,7 @@ export default async function RootLayout({
             <div className="flex min-h-screen flex-col justify-between">
               <div className="flex flex-col">
                 <Header />
-                <main className={`mx-auto flex max-w-5xl flex-col items-center justify-start px-6`}>
+                <main className="mx-auto flex w-full max-w-5xl flex-col items-center justify-start px-6">
                   <PageTitle />
                   {children}
                 </main>
