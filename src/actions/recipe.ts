@@ -2,16 +2,17 @@
 
 import prisma from '@/utils/prisma';
 
+const DEFAULT_RECIPE_INCLUDE_INGREDIENTS = {
+  ingredients: {
+    include: {
+      ingredient: true,
+    },
+  },
+};
 export const getrecipes = async () => {
   try {
     const recipes = await prisma.recipe.findMany({
-      include: {
-        ingredients: {
-          include: {
-            ingredient: true,
-          },
-        },
-      },
+      include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
     });
 
     return { success: true, recipes };
@@ -56,13 +57,7 @@ export const createRecipe = async (formData: FormData) => {
           })),
         },
       },
-      include: {
-        ingredients: {
-          include: {
-            ingredient: true,
-          },
-        },
-      },
+      include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
     });
 
     return { success: true, recipe };
@@ -109,13 +104,7 @@ export const updateRecipe = async (id: string, formData: FormData) => {
           })),
         },
       },
-      include: {
-        ingredients: {
-          include: {
-            ingredient: true,
-          },
-        },
-      },
+      include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
     });
 
     return { success: true, recipe };
@@ -139,5 +128,19 @@ export const deleteRecipe = async (id: string) => {
   } catch (error) {
     console.error('Deleting recipes error: ', error);
     return { success: false, error: 'Deleting recipes error' };
+  }
+};
+
+export const getRecipeById = async (id: string) => {
+  if (!id) return null;
+
+  try {
+    return await prisma.recipe.findUnique({
+      where: { id },
+      include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
+    });
+  } catch (error) {
+    console.error('getRecipeById error', error);
+    return null;
   }
 };

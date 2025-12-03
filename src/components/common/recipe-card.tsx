@@ -34,53 +34,83 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
     return unitOption ? unitOption.label : unit.toLowerCase();
   };
 
+  const ingredientsPreview = recipe.ingredients.slice(0, 3);
+  const remainingCount = recipe.ingredients.length - ingredientsPreview.length;
+
   return (
-    <Card className="flex h-[480px] w-full max-w-md min-w-[254px] flex-col">
-      <div className="h-48 overflow-hidden">
-        {recipe.imageUrl ? (
-          <div className="group relative h-48 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-all hover:shadow-lg">
+    <Card className="flex h-full w-full max-w-xs flex-col overflow-hidden rounded-2xl shadow-sm transition-shadow hover:shadow-md">
+      <Link href={`/recipes/${recipe.id}`} className="flex flex-1 flex-col">
+        <div className="relative h-40 w-full bg-gray-100">
+          {recipe.imageUrl ? (
             <Image
               src={recipe.imageUrl}
-              alt="Image for recipe"
+              alt={`Image for recipe "${recipe.name}"`}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-transform duration-300 hover:scale-105"
             />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gray-200 text-sm text-gray-500">
+              No image
+            </div>
+          )}
+        </div>
+
+        <CardHeader className="flex items-start justify-between px-4 pt-4 pb-2 text-black">
+          <h2 className="line-clamp-1 text-lg font-semibold">{recipe.name}</h2>
+        </CardHeader>
+
+        <CardBody className="flex flex-1 flex-col gap-3 px-4 pb-2 text-black">
+          <p className="line-clamp-2 text-sm text-gray-600">
+            {recipe.description || 'No description yet'}
+          </p>
+
+          <div>
+            <h3 className="mb-1 text-sm font-semibold">Ingredients</h3>
+            <ul className="space-y-1 text-sm text-gray-700">
+              {ingredientsPreview.map((ing) => (
+                <li key={ing.id} className="flex justify-between gap-2">
+                  <span className="flex-1 truncate">{ing.ingredient.name}</span>
+                  <span className="shrink-0 text-gray-500">
+                    {ing.quantity} {getUnitLabel(ing.ingredient.unit)}
+                  </span>
+                </li>
+              ))}
+              {remainingCount > 0 && (
+                <li className="text-xs text-gray-400">
+                  + {remainingCount} more ingredient{remainingCount > 1 ? 's' : ''}
+                </li>
+              )}
+            </ul>
           </div>
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gray-200">
-            <span className="text-gray-500">No image</span>
+        </CardBody>
+      </Link>
+
+      <div className="flex items-center justify-between gap-2 border-t border-gray-100 px-4 py-3">
+        <Link href={`/recipes/${recipe.id}/details`}>
+          <Button color="primary" variant="ghost" size="sm">
+            Details
+          </Button>
+        </Link>
+
+        {isAuth && (
+          <div className="flex gap-2">
+            <Link href={`/recipes/${recipe.id}/edit`}>
+              <Button color="primary" variant="light" size="sm">
+                Edit
+              </Button>
+            </Link>
+            <Button
+              color="danger"
+              variant="light"
+              size="sm"
+              onPress={handleDelete}
+              isLoading={isPending}
+            >
+              Delete
+            </Button>
           </div>
         )}
       </div>
-
-      <CardHeader className="flex items-center justify-between text-black">
-        <h2 className="text-xl font-bold">{recipe.name}</h2>
-      </CardHeader>
-
-      <CardBody className="flex-1 text-black">
-        <p className="line-clamp-6 text-gray-600">{recipe.description || 'Без описания'}</p>
-        <h3 className="mt-4 font-semibold">Ingredients:</h3>
-        <ul className="max-h-24 list-disc overflow-y-auto pl-5">
-          {recipe.ingredients.map((ing) => (
-            <li key={ing.id}>
-              {ing.ingredient.name}: {ing.quantity} {getUnitLabel(ing.ingredient.unit)}
-            </li>
-          ))}
-        </ul>
-      </CardBody>
-
-      {isAuth && (
-        <div className="flex justify-end gap-2 p-4">
-          <Link href={`/recipes/${recipe.id}`}>
-            <Button color="primary" variant="light">
-              Edit
-            </Button>
-          </Link>
-          <Button color="danger" variant="light" onPress={handleDelete} isLoading={isPending}>
-            Delete
-          </Button>
-        </div>
-      )}
     </Card>
   );
 };
