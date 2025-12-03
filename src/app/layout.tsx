@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import Link from 'next/link';
 
 import { auth } from '@/auth/auth';
 import Header from '@/components/UI/layout/header';
@@ -31,27 +32,45 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { footerHeight } = layoutConfig;
   const session = await auth();
+  const { footerHeight } = layoutConfig;
 
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} bg-[#fafafa] antialiased`}>
         <Providers session={session}>
           <AppLoader>
-            <div className="flex min-h-screen flex-col justify-between">
-              <div className="flex flex-col">
-                <Header />
-                <main className="mx-auto flex w-full max-w-5xl flex-col items-center justify-start px-6">
-                  <PageTitle />
-                  {children}
-                </main>
-              </div>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+
+              <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10">
+                <PageTitle />
+                {children}
+              </main>
+
               <footer
-                className={`flex items-center justify-center`}
-                style={{ height: `${footerHeight}` }}
+                className="border-t border-gray-100 bg-white"
+                style={{ height: footerHeight }}
               >
-                {siteConfig.description}
+                <div className="mx-auto flex h-full w-full max-w-5xl items-center justify-between px-6 text-xs text-gray-400">
+                  <div className="space-y-1">
+                    <p>&copy; {new Date().getFullYear()} Shpikov&apos;s recipes.</p>
+                    <p className="max-w-md">{siteConfig.description}</p>
+                  </div>
+                  <div className="hidden gap-4 sm:flex">
+                    <Link
+                      href="https://github.com/OShpikovskaia"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover:text-gray-600"
+                    >
+                      GitHub
+                    </Link>
+                    <Link href="/about" className="hover:text-gray-600">
+                      About project
+                    </Link>
+                  </div>
+                </div>
               </footer>
             </div>
           </AppLoader>
