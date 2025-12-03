@@ -6,9 +6,10 @@ import { ingredientSchema } from '@/schema/zod';
 import type { IngredientsFormData } from '@/types/form-data';
 import prisma from '@/utils/prisma';
 
-type CreateIngredientResult =
-  | { success: true; ingredient: Ingredients }
-  | { success: false; error: string };
+type IngredientErrorResult = { success: false; error: string };
+type CreateIngredientResult = { success: true; ingredient: Ingredients } | IngredientErrorResult;
+type GetIngredientsResult = { success: true; ingredients: Ingredients[] } | IngredientErrorResult;
+type DeleteIngredientResult = { success: true; ingredient: Ingredients } | IngredientErrorResult;
 
 const normalizePricePerUnit = (price: IngredientsFormData['pricePerUnit']) => {
   const trimmedPrice = price?.trim();
@@ -20,6 +21,9 @@ const normalizePricePerUnit = (price: IngredientsFormData['pricePerUnit']) => {
   const parsedPrice = Number.parseFloat(trimmedPrice);
   return Number.isNaN(parsedPrice) ? Number.NaN : parsedPrice;
 };
+
+const formatZodError = (issues: { message: string }[]) =>
+  issues.map((issue) => issue.message).join(', ');
 
 export const createIngredient = async (
   formData: IngredientsFormData,
@@ -33,8 +37,7 @@ export const createIngredient = async (
     const parsedResult = ingredientSchema.safeParse(normalizedInput);
 
     if (!parsedResult.success) {
-      const message = parsedResult.error.issues.map((issue) => issue.message).join(', ');
-      return { success: false, error: message };
+      return { success: false, error: formatZodError(parsedResult.error.issues) };
     }
 
     const ingredient = await prisma.ingredients.create({
@@ -48,17 +51,17 @@ export const createIngredient = async (
   }
 };
 
-export const getIngredients = async () => {
+export const getIngredients = async (): Promise<GetIngredientsResult> => {
   try {
     const ingredients = await prisma.ingredients.findMany();
     return { success: true, ingredients };
   } catch (error) {
     console.error('Get ingredients error: ', error);
-    return { error: 'Get ingredients error' };
+    return { success: false, error: 'Get ingredients error' };
   }
 };
 
-export const deleteIngredient = async (id: string) => {
+export const deleteIngredient = async (id: string): Promise<DeleteIngredientResult> => {
   try {
     const ingredient = await prisma.ingredients.delete({
       where: { id },
@@ -67,6 +70,6 @@ export const deleteIngredient = async (id: string) => {
     return { success: true, ingredient };
   } catch (error) {
     console.error('Delete ingredient error: ', error);
-    return { error: 'Delete ingredient error' };
+    return { success: false, error: 'Delete ingredient error' };
   }
 };

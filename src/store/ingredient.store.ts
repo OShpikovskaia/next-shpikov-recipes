@@ -1,16 +1,25 @@
 import { create } from 'zustand';
 
-import { createIngredient, deleteIngredient, getIngredients } from '@/actions/ingredients';
+import {
+  createIngredient,
+  deleteIngredient,
+  getIngredients,
+} from '@/actions/ingredients';
 import type { IngredientsFormData } from '@/types/form-data';
 import type { IIngredient } from '@/types/ingredient';
+
+interface ActionFeedback {
+  success: boolean;
+  error?: string;
+}
 
 interface IngredientState {
   ingredients: IIngredient[];
   isLoading: boolean;
   error: string | null;
   loadIngredients: () => Promise<void>;
-  addIngredient: (formData: IngredientsFormData) => Promise<void>;
-  removeIngredient: (id: string) => Promise<void>;
+  addIngredient: (formData: IngredientsFormData) => Promise<ActionFeedback>;
+  removeIngredient: (id: string) => Promise<ActionFeedback>;
 }
 
 export const useIngredientStore = create<IngredientState>((set) => ({
@@ -39,14 +48,17 @@ export const useIngredientStore = create<IngredientState>((set) => ({
       if (result.success) {
         set((state) => ({
           ingredients: [...state.ingredients, result.ingredient],
-          isLoading: false,
         }));
-      } else {
-        set({ error: result.error, isLoading: false });
+        return { success: true };
       }
+
+      set({ error: result.error });
+      return { success: false, error: result.error };
     } catch (error) {
       console.error('Ingredient create error: ', error);
-      set({ error: 'Ingredient create error', isLoading: false });
+      const fallbackError = 'Ingredient create error';
+      set({ error: fallbackError });
+      return { success: false, error: fallbackError };
     }
   },
   removeIngredient: async (id: string) => {
@@ -56,14 +68,17 @@ export const useIngredientStore = create<IngredientState>((set) => ({
       if (result.success) {
         set((state) => ({
           ingredients: state.ingredients.filter((ingredient) => ingredient.id !== id),
-          isLoading: false,
         }));
-      } else {
-        set({ error: result.error, isLoading: false });
+        return { success: true };
       }
+
+      set({ error: result.error });
+      return { success: false, error: result.error };
     } catch (error) {
       console.error('Delete ingredient error: ', error);
-      set({ error: 'Delete ingredient error', isLoading: false });
+      const fallbackError = 'Delete ingredient error';
+      set({ error: fallbackError });
+      return { success: false, error: fallbackError };
     }
   },
 }));

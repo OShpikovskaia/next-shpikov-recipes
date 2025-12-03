@@ -7,10 +7,10 @@ import { Button, Card, CardBody, CardHeader } from '@heroui/react';
 import type { getRecipeById } from '@/actions/recipe';
 import { formatUnitLabel, splitDescriptionLines } from '@/utils/recipe-utils';
 
-type RecipeResult = NonNullable<Awaited<ReturnType<typeof getRecipeById>>>;
+type RecipeWithIngredients = NonNullable<Awaited<ReturnType<typeof getRecipeById>>>;
 
 interface RecipeDetailsProps {
-  recipe: RecipeResult;
+  recipe: RecipeWithIngredients;
 }
 
 const RecipeDetails = ({ recipe }: RecipeDetailsProps) => {
