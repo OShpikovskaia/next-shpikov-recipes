@@ -1,3 +1,4 @@
+// FILE: src/components/UI/layout/header.tsx
 'use client';
 
 import { useState } from 'react';
@@ -85,6 +86,31 @@ const Header = () => {
         <NavbarContent justify="end" className="gap-3">
           {status === 'loading' && (
             <span className="text-[11px] text-gray-400">Checking session…</span>
+          )}
+
+          {!isAuth && status !== 'loading' && (
+            <>
+              <NavbarItem className="hidden sm:flex">
+                <Button
+                  color="default"
+                  variant="light"
+                  size="sm"
+                  onPress={() => setIsLoginOpen(true)}
+                >
+                  Login
+                </Button>
+              </NavbarItem>
+              <NavbarItem>
+                <Button
+                  color="primary"
+                  variant="flat"
+                  size="sm"
+                  onPress={() => setIsSignupOpen(true)}
+                >
+                  Sign up
+                </Button>
+              </NavbarItem>
+            </>
           )}
 
           {isAuth && status !== 'loading' && (
