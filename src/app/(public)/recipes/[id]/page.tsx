@@ -7,9 +7,33 @@ import { siteConfig } from '@/config/site.config';
 
 type ParamsPromise = Promise<{ id: string }>;
 
-export async function generateMetadata({ params }: { params: ParamsPromise }): Promise<Metadata> {
+const fetchRecipeOrThrow = async (params: ParamsPromise) => {
   const { id } = await params;
+  const recipe = await getRecipeById(id);
 
+  if (!recipe) {
+    notFound();
+  }
+
+  return recipe;
+};
+
+const RecipeDetailsPage = async ({ params }: { params: ParamsPromise }) => {
+  const recipe = await fetchRecipeOrThrow(params);
+
+  return (
+    <div className="mx-auto w-full max-w-4xl px-4 py-8">
+      <RecipeDetails recipe={recipe} />
+    </div>
+  );
+};
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: ParamsPromise;
+}): Promise<Metadata> => {
+  const { id } = await params;
   const recipe = await getRecipeById(id);
 
   if (!recipe) {
@@ -23,22 +47,6 @@ export async function generateMetadata({ params }: { params: ParamsPromise }): P
     title: `${recipe.name} | ${siteConfig.title}`,
     description: recipe.description || siteConfig.description,
   };
-}
-
-const RecipeDetailsPage = async ({ params }: { params: ParamsPromise }) => {
-  const { id } = await params;
-
-  const recipe = await getRecipeById(id);
-
-  if (!recipe) {
-    notFound();
-  }
-
-  return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <RecipeDetails recipe={recipe} />
-    </main>
-  );
 };
 
 export default RecipeDetailsPage;

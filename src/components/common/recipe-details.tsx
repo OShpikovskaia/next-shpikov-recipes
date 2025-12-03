@@ -2,105 +2,94 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '@heroui/button';
-import { Card, CardBody, CardHeader } from '@heroui/card';
+import { Button, Card, CardBody, CardHeader } from '@heroui/react';
 
 import type { getRecipeById } from '@/actions/recipe';
-import { UNIT_ABBREVIATIONS } from '@/constants/select-options';
+import { formatUnitLabel, splitDescriptionLines } from '@/utils/recipe-utils';
 
-type RecipeById = NonNullable<Awaited<ReturnType<typeof getRecipeById>>>;
+type RecipeResult = NonNullable<Awaited<ReturnType<typeof getRecipeById>>>;
 
 interface RecipeDetailsProps {
-  recipe: RecipeById;
+  recipe: RecipeResult;
 }
 
 const RecipeDetails = ({ recipe }: RecipeDetailsProps) => {
+  const descriptionLines = splitDescriptionLines(recipe.description);
   const ingredientCount = recipe.ingredients.length;
+  const hasSteps = descriptionLines.length > 1;
 
-  const descriptionText = recipe.description ?? '';
-  const descriptionLines = descriptionText
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
+  const heroDescription =
+    descriptionLines[0] ?? 'This recipe does not have a description yet. Check back soon!';
 
   return (
-    <div className="space-y-6">
-      {/* back link */}
-      <Button as={Link} href="/" variant="light" size="sm" className="mb-2 w-fit">
+    <div className="space-y-8">
+      <Button as={Link} href="/" variant="light" size="sm" className="w-fit">
         ← Back to recipes
       </Button>
 
-      {/* hero */}
-      <div className="flex flex-col gap-6 md:flex-row md:items-center">
-        <div className="md:w-1/4">
+      <section className="grid gap-6 lg:grid-cols-[minmax(240px,320px)_1fr]">
+        <div className="relative aspect-square w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
           {recipe.image ? (
-            <Image
-              src={recipe.image}
-              alt={recipe.name}
-              width={220}
-              height={220}
-              className="aspect-square w-full rounded-xl object-cover"
-            />
+            <Image src={recipe.image} alt={recipe.name} fill className="object-cover" />
           ) : (
-            <div className="bg-default-100 aspect-square w-full rounded-xl" />
+            <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
+              No image available
+            </div>
           )}
         </div>
 
-        <div className="flex-1 space-y-3">
-          <h1 className="text-3xl font-semibold tracking-tight">{recipe.name}</h1>
-
-          {descriptionText && (
-            <p className="text-default-500 text-sm">{descriptionLines[0] ?? descriptionText}</p>
-          )}
-
-          <p className="text-default-400 text-xs">
+        <div className="flex flex-col gap-4">
+          <div>
+            <h1 className="text-3xl font-semibold text-gray-900">{recipe.name}</h1>
+            <p className="text-base text-gray-600">{heroDescription}</p>
+          </div>
+          <p className="text-sm tracking-wide text-gray-400 uppercase">
             {ingredientCount} ingredient{ingredientCount === 1 ? '' : 's'}
           </p>
         </div>
-      </div>
+      </section>
 
-      {/* ingredients */}
-      <Card>
-        <CardHeader className="flex items-center justify-between text-base font-medium">
-          <span>Ingredients</span>
-          <span className="text-default-400 text-xs">{ingredientCount} total</span>
-        </CardHeader>
-        <CardBody className="bg-default-100 grid gap-px p-0 md:grid-cols-2">
-          {ingredientCount === 0 && (
-            <p className="text-default-400 px-4 py-3 text-sm">No ingredients added yet.</p>
-          )}
+      <section>
+        <Card>
+          <CardHeader className="flex items-center justify-between text-base font-medium">
+            <span>Ingredients</span>
+            <span className="text-sm text-gray-400">{ingredientCount} total</span>
+          </CardHeader>
+          <CardBody className="bg-default-100 grid gap-px p-0 md:grid-cols-2">
+            {ingredientCount === 0 && (
+              <p className="px-4 py-3 text-sm text-gray-400">No ingredients added yet.</p>
+            )}
 
-          {recipe.ingredients.map((item) => {
-            const unitOption = UNIT_ABBREVIATIONS.find((opt) => opt.value === item.ingredient.unit);
-            const unitLabel = unitOption?.label ?? item.ingredient.unit.toLowerCase();
-
-            return (
+            {recipe.ingredients.map((item) => (
               <div
                 key={item.id}
                 className="flex items-center justify-between gap-4 bg-white px-4 py-3 text-sm"
               >
                 <span className="flex-1">{item.ingredient.name}</span>
-                <span className="text-default-500 shrink-0">
-                  {item.quantity} {unitLabel}
+                <span className="shrink-0 text-gray-500">
+                  {item.quantity} {formatUnitLabel(item.ingredient.unit)}
                 </span>
               </div>
-            );
-          })}
-        </CardBody>
-      </Card>
-
-      {/* steps (if exist) */}
-      {descriptionLines.length > 1 && (
-        <Card>
-          <CardHeader className="text-base font-medium">Steps</CardHeader>
-          <CardBody>
-            <ol className="text-default-600 list-decimal space-y-3 pl-5 text-sm">
-              {descriptionLines.map((line, index) => (
-                <li key={index}>{line}</li>
-              ))}
-            </ol>
+            ))}
           </CardBody>
         </Card>
+      </section>
+
+      {hasSteps && (
+        <section>
+          <Card>
+            <CardHeader className="text-base font-medium">Steps</CardHeader>
+            <CardBody>
+              <ol className="list-decimal space-y-3 pl-5 text-sm text-gray-700">
+                {descriptionLines.map((line, index) => (
+                  <li key={index} className="leading-relaxed">
+                    {line}
+                  </li>
+                ))}
+              </ol>
+            </CardBody>
+          </Card>
+        </section>
       )}
     </div>
   );
