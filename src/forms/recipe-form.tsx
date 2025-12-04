@@ -186,7 +186,7 @@ const RecipeForm = ({ initialRecipe }: RecipeFormProps) => {
                       handleIngredientChange(field.id, 'ingredientId', e.target.value)
                     }
                   >
-                    {ingredients.map((ingredient) => (
+                    {(ingredients || []).map((ingredient) => (
                       <SelectItem key={ingredient.id} className="text-black">
                         {ingredient.name}
                       </SelectItem>
