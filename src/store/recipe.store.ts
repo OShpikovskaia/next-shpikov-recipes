@@ -10,7 +10,7 @@ interface IActionResult {
 }
 
 interface RecipeState {
-  recipes: IRecipe[];
+  recipes: IRecipe[] | null;
   isLoading: boolean;
   error: string | null;
   loadRecipes: () => Promise<void>;
@@ -20,7 +20,7 @@ interface RecipeState {
 }
 
 export const useRecipeStore = create<RecipeState>((set) => ({
-  recipes: [],
+  recipes: null,
   isLoading: false,
   error: null,
   loadRecipes: async () => {
@@ -34,7 +34,7 @@ export const useRecipeStore = create<RecipeState>((set) => ({
       }
     } catch (error) {
       console.error('Get recipes error: ', error);
-      set({ error: 'Get recipes error', isLoading: false });
+      set({ error: 'Get recipes error', isLoading: false, recipes: null });
     }
   },
 
@@ -45,7 +45,7 @@ export const useRecipeStore = create<RecipeState>((set) => ({
 
       if (result.success) {
         set((state) => ({
-          recipes: [...state.recipes, result.recipe!],
+          recipes: [...(state.recipes || []), result.recipe!],
           isLoading: false,
         }));
         return { success: true, recipe: result.recipe };
@@ -67,7 +67,9 @@ export const useRecipeStore = create<RecipeState>((set) => ({
 
       if (result.success) {
         set((state) => ({
-          recipes: state.recipes.map((recipe) => (recipe.id === id ? result.recipe! : recipe)),
+          recipes: (state.recipes || []).map((recipe) =>
+            recipe.id === id ? result.recipe! : recipe,
+          ),
           isLoading: false,
         }));
         return { success: true, recipe: result.recipe };
@@ -88,7 +90,7 @@ export const useRecipeStore = create<RecipeState>((set) => ({
       const result = await deleteRecipe(id);
       if (result.success) {
         set((state) => ({
-          recipes: state.recipes.filter((recipe) => recipe.id !== id),
+          recipes: (state.recipes || []).filter((recipe) => recipe.id !== id),
           isLoading: false,
         }));
       } else {

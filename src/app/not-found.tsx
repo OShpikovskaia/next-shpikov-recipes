@@ -1,18 +1,17 @@
 'use client';
 
-import Link from 'next/link';
-import { Button } from '@heroui/react';
+import EmptyState from '@/components/common/empty-state';
 
 const NotFoundPage = () => {
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="text-8xl font-bold text-gray-300">404</div>
-      <h1 className="text-3xl font-bold tracking-tight">Page not found</h1>
-      <div className="pt-6">
-        <Button as={Link} color="primary" variant="shadow" href="/">
-          Return to Home page
-        </Button>
-      </div>
+    <div className="mx-auto w-full max-w-3xl px-6">
+      <EmptyState
+        variant="recipeNotFound"
+        title="Page not found"
+        description="This page doesn’t exist or might have been moved."
+        primaryActionLabel="Back to recipes"
+        primaryActionHref="/"
+      />
     </div>
   );
 };

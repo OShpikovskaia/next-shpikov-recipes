@@ -1,10 +1,6 @@
 import { create } from 'zustand';
 
-import {
-  createIngredient,
-  deleteIngredient,
-  getIngredients,
-} from '@/actions/ingredients';
+import { createIngredient, deleteIngredient, getIngredients } from '@/actions/ingredients';
 import type { IngredientsFormData } from '@/types/form-data';
 import type { IIngredient } from '@/types/ingredient';
 
@@ -14,7 +10,7 @@ interface ActionFeedback {
 }
 
 interface IngredientState {
-  ingredients: IIngredient[];
+  ingredients: IIngredient[] | null;
   isLoading: boolean;
   error: string | null;
   loadIngredients: () => Promise<void>;
@@ -23,21 +19,39 @@ interface IngredientState {
 }
 
 export const useIngredientStore = create<IngredientState>((set) => ({
-  ingredients: [],
+  ingredients: null,
   isLoading: false,
   error: null,
   loadIngredients: async () => {
     set({ isLoading: true, error: null });
+
     try {
       const result = await getIngredients();
-      if (result.success) {
-        set({ ingredients: result.ingredients, isLoading: false });
-      } else {
-        set({ error: result.error, isLoading: false });
+
+      if (!result.success) {
+        const message = result.error ?? 'Get ingredients error';
+
+        set({
+          ingredients: [],
+          isLoading: false,
+          error: message,
+        });
+        return;
       }
+
+      set({
+        ingredients: result.ingredients,
+        isLoading: false,
+        error: null,
+      });
     } catch (error) {
       console.error('Get ingredients error: ', error);
-      set({ error: 'Get ingredients error', isLoading: false });
+
+      set({
+        ingredients: [],
+        isLoading: false,
+        error: 'Get ingredients error',
+      });
     }
   },
   addIngredient: async (formData: IngredientsFormData) => {
@@ -47,7 +61,8 @@ export const useIngredientStore = create<IngredientState>((set) => ({
 
       if (result.success) {
         set((state) => ({
-          ingredients: [...state.ingredients, result.ingredient],
+          ingredients: [...(state.ingredients || []), result.ingredient],
+          error: null,
         }));
         return { success: true };
       }
@@ -67,7 +82,8 @@ export const useIngredientStore = create<IngredientState>((set) => ({
       const result = await deleteIngredient(id);
       if (result.success) {
         set((state) => ({
-          ingredients: state.ingredients.filter((ingredient) => ingredient.id !== id),
+          ingredients: (state.ingredients || []).filter((ingredient) => ingredient.id !== id),
+          error: null,
         }));
         return { success: true };
       }
