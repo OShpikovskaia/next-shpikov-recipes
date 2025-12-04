@@ -14,6 +14,7 @@ const mapDbRecipeToRecipe = (db: DbRecipeWithIngredients): IRecipe => {
     id: db.id,
     name: db.name,
     description: db.description,
+    steps: db.steps || '',
     imageUrl: db.image ?? null,
     ingredients: db.ingredients,
   };
@@ -95,6 +96,7 @@ export const updateRecipe = async (id: string, formData: FormData) => {
   try {
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
+    const steps = formData.get('steps') as string;
     const imageUrl = formData.get('imageUrl') as string;
 
     const ingredients = Array.from(formData.entries())
@@ -121,6 +123,7 @@ export const updateRecipe = async (id: string, formData: FormData) => {
       data: {
         name,
         description,
+        steps,
         image: imageUrl,
         ingredients: {
           deleteMany: {},
