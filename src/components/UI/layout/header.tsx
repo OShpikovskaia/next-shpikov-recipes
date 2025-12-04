@@ -1,4 +1,3 @@
-// FILE: src/components/UI/layout/header.tsx
 'use client';
 
 import { useState } from 'react';
@@ -15,24 +14,45 @@ import { useAuthStore } from '@/store/auth.store';
 import LoginModal from '../modals/login.modal';
 import SignupModal from '../modals/signup.modal';
 
-export const Logo = () => (
-  <Image src="/logo.png" priority alt={siteConfig.title} width={26} height={26} />
-);
+export const Logo = () => {
+  return <Image src="/logo.png" priority alt={siteConfig.title} width={26} height={26} />;
+};
 
 const Header = () => {
-  const pathname = usePathname();
+  const path = usePathname();
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   const { isAuth, session, status, setAuthState } = useAuthStore();
-  const { headerHeight } = layoutConfig;
 
-  const filteredNavItems = siteConfig.navItems.filter((item) => {
-    if (item.href === '/ingredients') {
-      return isAuth;
-    }
-    return true;
-  });
+  const getNavItems = () => {
+    return siteConfig.navItems
+      .filter((item) => {
+        if (item.href === '/ingredients') {
+          return isAuth;
+        }
+        return true;
+      })
+      .map((item) => {
+        const isActive = path === item.href;
+
+        return (
+          <NavbarItem key={item.href} className="px-0">
+            <Link
+              href={item.href}
+              className={[
+                'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+                isActive
+                  ? 'bg-[(--color-primary)] text-white shadow-sm'
+                  : 'text-slate-700 hover:bg-[(--color-primary-soft)] hover:text-[(--color-primary)]',
+              ].join(' ')}
+            >
+              {item.label}
+            </Link>
+          </NavbarItem>
+        );
+      });
+  };
 
   const handleSignout = async () => {
     try {
@@ -44,95 +64,65 @@ const Header = () => {
     setAuthState('unauthenticated', null);
   };
 
-  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
-
   return (
-    <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/80 backdrop-blur">
-      <Navbar
-        maxWidth="full"
-        style={{ height: headerHeight }}
-        className="mx-auto w-full max-w-5xl px-4"
-        classNames={{
-          wrapper: 'w-full px-0',
-          item: 'data-[active=true]:text-gray-900',
-        }}
-      >
-        <NavbarBrand>
-          <Link href="/" className="flex items-center gap-2">
-            <Logo />
-            <span className="text-sm font-semibold tracking-tight text-gray-900">
-              {siteConfig.title}
-            </span>
-          </Link>
-        </NavbarBrand>
+    <Navbar
+      className="border-b border-gray-200 bg-white/80 backdrop-blur-md"
+      maxWidth="xl"
+      style={{ height: `${layoutConfig.headerHeight}` }}
+    >
+      <NavbarBrand className="gap-2">
+        <Link href="/" className="flex items-center gap-2">
+          <Logo />
+          <p className="text-sm font-semibold text-slate-900">{siteConfig.title}</p>
+        </Link>
+      </NavbarBrand>
 
-        <NavbarContent className="hidden gap-3 md:flex" justify="center">
-          {filteredNavItems.map((item) => (
-            <NavbarItem key={item.href} isActive={isActive(item.href)}>
-              <Link
-                href={item.href}
-                className={
-                  isActive(item.href)
-                    ? 'rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white'
-                    : 'rounded-full px-3 py-1 text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-900'
-                }
-              >
-                {item.label}
-              </Link>
+      <NavbarContent className="hidden gap-4 sm:flex" justify="center">
+        {getNavItems()}
+      </NavbarContent>
+
+      <NavbarContent justify="end" className="items-center gap-3">
+        {status === 'loading' && <span className="text-xs text-gray-500">Checking session…</span>}
+
+        {status !== 'loading' && isAuth && (
+          <span className="hidden text-xs text-gray-500 sm:inline">
+            Hello,&nbsp;
+            <span className="font-medium text-slate-900">{session?.user?.email}</span>!
+          </span>
+        )}
+
+        {status !== 'loading' && !isAuth && (
+          <>
+            <NavbarItem className="hidden sm:flex">
+              <Button variant="flat" size="sm" onPress={() => setIsLoginOpen(true)}>
+                Login
+              </Button>
             </NavbarItem>
-          ))}
-        </NavbarContent>
+            <NavbarItem>
+              <Button color="primary" size="sm" onPress={() => setIsSignupOpen(true)}>
+                Sign up
+              </Button>
+            </NavbarItem>
+          </>
+        )}
 
-        <NavbarContent justify="end" className="gap-3">
-          {status === 'loading' && (
-            <span className="text-[11px] text-gray-400">Checking session…</span>
-          )}
+        {status !== 'loading' && isAuth && (
+          <NavbarItem>
+            <Button
+              size="sm"
+              variant="flat"
+              className="bg-gray-100 text-xs font-medium text-gray-700 hover:bg-gray-200"
+              onPress={handleSignout}
+            >
+              Sign out
+            </Button>
+          </NavbarItem>
+        )}
+      </NavbarContent>
 
-          {!isAuth && status !== 'loading' && (
-            <>
-              <NavbarItem className="hidden sm:flex">
-                <Button
-                  color="default"
-                  variant="light"
-                  size="sm"
-                  onPress={() => setIsLoginOpen(true)}
-                >
-                  Login
-                </Button>
-              </NavbarItem>
-              <NavbarItem>
-                <Button
-                  color="primary"
-                  variant="flat"
-                  size="sm"
-                  onPress={() => setIsSignupOpen(true)}
-                >
-                  Sign up
-                </Button>
-              </NavbarItem>
-            </>
-          )}
-
-          {isAuth && status !== 'loading' && (
-            <>
-              <NavbarItem className="hidden items-center sm:flex">
-                <span className="max-w-[220px] truncate text-xs font-medium text-gray-700">
-                  Hello, {session?.user?.email ?? 'friend'}!
-                </span>
-              </NavbarItem>
-              <NavbarItem>
-                <Button color="default" variant="flat" size="sm" onPress={handleSignout}>
-                  Sign out
-                </Button>
-              </NavbarItem>
-            </>
-          )}
-        </NavbarContent>
-
-        <SignupModal isOpen={isSignupOpen} onClose={() => setIsSignupOpen(false)} />
-        <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
-      </Navbar>
-    </header>
+      <SignupModal isOpen={isSignupOpen} onClose={() => setIsSignupOpen(false)} />
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+    </Navbar>
   );
 };
 

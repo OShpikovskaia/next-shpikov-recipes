@@ -91,16 +91,6 @@ const IngredientsTable = () => {
                 <p className="max-w-sm text-center text-xs text-gray-500">
                   Add your first ingredient to reuse it in recipes and keep prices in one place.
                 </p>
-
-                <Button
-                  as={Link}
-                  href="/ingredients/new"
-                  color="primary"
-                  size="sm"
-                  className="mt-1"
-                >
-                  Add ingredient
-                </Button>
               </div>
             )
           }
