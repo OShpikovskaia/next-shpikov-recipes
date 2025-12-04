@@ -119,8 +119,8 @@ const RecipeForm = ({ initialRecipe }: RecipeFormProps) => {
 
         <Textarea
           name="description"
-          label="Description"
-          placeholder="Enter description (optional)"
+          label="Short description"
+          placeholder="Enter short description (optional)"
           minRows={3}
           maxRows={6}
           value={formData.description}
@@ -133,7 +133,7 @@ const RecipeForm = ({ initialRecipe }: RecipeFormProps) => {
         <Textarea
           name="steps"
           label="Steps"
-          placeholder="Write each step on a new line. We'll number them for you automatically."
+          placeholder="Write each step on a new line. We'll number them for you automatically (optional)."
         />
         <p className="mt-1 text-xs text-gray-500">
           One step per line. Don&apos;t add numbers – we&apos;ll do it for you.

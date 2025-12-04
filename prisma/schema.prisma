@@ -97,7 +97,7 @@ model Recipe {
   id          String          @id @default(cuid())
   name        String
   description String
-  steps       String? 
+  steps       String?         @db.Text
   image       String?         @map("image_url")
   ingredients  RecipeIngredient[]
 
