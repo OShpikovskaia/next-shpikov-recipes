@@ -71,7 +71,7 @@ const IngredientForm = () => {
         validate={(value) => (!value ? 'Name is required' : null)}
       />
 
-      <div className="flex w-full flex-col gap-2 md:flex-row">
+      <div className="flex w-full flex-col items-start gap-2 md:flex-row">
         <Select
           isRequired
           name="category"
