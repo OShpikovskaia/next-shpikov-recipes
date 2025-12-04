@@ -9,17 +9,30 @@ import { signinWithCredantionals } from '@/actions/signin';
 interface LoginFormProps {
   onClose: () => void;
 }
+
 const LoginForm = ({ onClose }: LoginFormProps) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await signinWithCredantionals(formData.email, formData.password);
+    setError(null);
+    setIsSubmitting(true);
+
+    const result = await signinWithCredantionals(formData.email, formData.password);
+
+    setIsSubmitting(false);
+
+    if (!result.success) {
+      setError(result.error ?? 'Login failed');
+      return;
+    }
+
     onClose();
-    // temporary hack -> need to get session here
     window.location.reload();
   };
 
@@ -33,7 +46,7 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
         type="email"
         value={formData.email}
         classNames={{
-          inputWrapper: 'bg-dafault-100',
+          inputWrapper: 'bg-default-100',
           input: 'text-sm focus:outline-none',
         }}
         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -42,6 +55,7 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
           return null;
         }}
       />
+
       <Input
         aria-label="Password"
         isRequired
@@ -50,7 +64,7 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
         type="password"
         value={formData.password}
         classNames={{
-          inputWrapper: 'bg-dafault-100',
+          inputWrapper: 'bg-default-100',
           input: 'text-sm focus:outline-none',
         }}
         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -60,11 +74,13 @@ const LoginForm = ({ onClose }: LoginFormProps) => {
         }}
       />
 
-      <div className="flex w-[100%] items-center justify-end gap-4 pt-8">
+      {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+
+      <div className="flex w-full items-center justify-end gap-4 pt-8">
         <Button variant="light" onPress={onClose}>
           Cancel
         </Button>
-        <Button color="primary" type="submit">
+        <Button color="primary" type="submit" isLoading={isSubmitting}>
           Login
         </Button>
       </div>

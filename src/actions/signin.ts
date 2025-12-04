@@ -2,7 +2,15 @@
 
 import { signIn } from '@/auth/auth';
 
-export const signinWithCredantionals = async (email: string, password: string) => {
+interface SignInResult {
+  success: boolean;
+  error?: string;
+}
+
+export const signinWithCredantionals = async (
+  email: string,
+  password: string,
+): Promise<SignInResult> => {
   try {
     const result = await signIn('credentials', {
       email,
@@ -10,9 +18,28 @@ export const signinWithCredantionals = async (email: string, password: string) =
       redirect: false,
     });
 
-    return result;
+    if (!result || result?.error) {
+      const errorCode = result.error;
+
+      if (errorCode === 'CredentialsSignin') {
+        return {
+          success: false,
+          error: 'Invalid email or password',
+        };
+      }
+
+      return {
+        success: false,
+        error: 'Failed to sign in. Please try again.',
+      };
+    }
+
+    return { success: true };
   } catch (error) {
     console.error('Authorize error:', error);
-    throw error;
+    return {
+      success: false,
+      error: 'Internal error during sign in',
+    };
   }
 };
