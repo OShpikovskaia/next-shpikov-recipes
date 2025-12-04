@@ -13,10 +13,20 @@ interface CustomModalProps {
 
 const CustomModal = ({ isOpen, onClose, title, children, size = 'xs' }: CustomModalProps) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size={size}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size={size}
+      placement="center"
+      scrollBehavior="inside"
+      classNames={{
+        base: 'w-full max-w-sm sm:max-w-md mx-4 sm:mx-0 rounded-2xl',
+        wrapper: 'items-center',
+      }}
+    >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1 border-b">
-          <h3 className="text-x1 text-background font-semibold text-black">{title}</h3>
+          <h3 className="text-x1 font-semibold text-black">{title}</h3>
         </ModalHeader>
         <ModalBody className="space-y4 py-6">{children}</ModalBody>
       </ModalContent>

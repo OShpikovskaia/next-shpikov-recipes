@@ -10,7 +10,7 @@ const PageTitle = () => {
   const pageTitle = currentNavItem ? currentNavItem.label : siteConfig.title;
 
   return (
-    <div className="my-6 flex w-full justify-center">
+    <div className="flex w-full justify-center">
       <h1 className="text-3xl font-bold">{pageTitle}</h1>
     </div>
   );
