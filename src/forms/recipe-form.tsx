@@ -130,6 +130,14 @@ const RecipeForm = ({ initialRecipe }: RecipeFormProps) => {
           }}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
         />
+        <Textarea
+          name="steps"
+          label="Steps"
+          placeholder="Write each step on a new line. We'll number them for you automatically."
+        />
+        <p className="mt-1 text-xs text-gray-500">
+          One step per line. Don&apos;t add numbers – we&apos;ll do it for you.
+        </p>
 
         <Input
           name="imageUrl"

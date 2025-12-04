@@ -46,6 +46,7 @@ export const createRecipe = async (formData: FormData) => {
   try {
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
+    const steps = formData.get('steps') as string;
     const imageUrl = formData.get('imageUrl') as string;
 
     const ingredients = Array.from(formData.entries())
@@ -71,6 +72,7 @@ export const createRecipe = async (formData: FormData) => {
       data: {
         name,
         description,
+        steps,
         image: imageUrl,
         ingredients: {
           create: ingredients.map(({ ingredientId, quantity }) => ({

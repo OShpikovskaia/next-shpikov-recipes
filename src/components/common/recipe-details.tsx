@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { Button, Card, CardBody, CardHeader } from '@heroui/react';
 
 import type { getRecipeById } from '@/actions/recipe';
-import { formatUnitLabel, splitDescriptionLines } from '@/utils/recipe-utils';
+import { EMPTY_STATE_CONFIG } from '@/config/empty-state.config';
+import { formatUnitLabel } from '@/utils/recipes';
 
 type RecipeWithIngredients = NonNullable<Awaited<ReturnType<typeof getRecipeById>>>;
 
@@ -14,16 +15,22 @@ interface RecipeDetailsProps {
 }
 
 const RecipeDetails = ({ recipe }: RecipeDetailsProps) => {
-  const descriptionLines = splitDescriptionLines(recipe.description);
   const ingredientCount = recipe.ingredients.length;
-  const hasSteps = descriptionLines.length > 1;
 
-  const heroDescription =
-    descriptionLines[0] ?? 'This recipe does not have a description yet. Check back soon!';
+  const shortDescription =
+    recipe.description?.trim() ||
+    'This recipe does not have a description yet. You can add it later.';
+
+  const steps = (recipe.steps ?? '')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const hasSteps = steps.length > 0;
 
   return (
     <div className="space-y-8">
-      <Button as={Link} href="/" variant="light" size="sm" className="w-fit">
+      <Button as={Link} href="/" variant="flat" color="primary" size="sm" className="w-fit">
         ← Back to recipes
       </Button>
 
@@ -32,17 +39,22 @@ const RecipeDetails = ({ recipe }: RecipeDetailsProps) => {
           {recipe.imageUrl ? (
             <Image src={recipe.imageUrl} alt={recipe.name} fill className="object-cover" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
-              No image available
-            </div>
+            <Image
+              src={EMPTY_STATE_CONFIG.recipeImageMissing.imageSrc}
+              alt={EMPTY_STATE_CONFIG.recipeImageMissing.alt}
+              fill
+              sizes="(min-width: 1024px) 320px, 100vw"
+              className="object-contain"
+            />
           )}
         </div>
 
         <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-3xl font-semibold text-gray-900">{recipe.name}</h1>
-            <p className="text-base text-gray-600">{heroDescription}</p>
+            <p className="mt-2 max-w-xl text-base text-gray-600">{shortDescription}</p>
           </div>
+
           <p className="text-sm tracking-wide text-gray-400 uppercase">
             {ingredientCount} ingredient{ingredientCount === 1 ? '' : 's'}
           </p>
@@ -55,35 +67,39 @@ const RecipeDetails = ({ recipe }: RecipeDetailsProps) => {
             <span>Ingredients</span>
             <span className="text-sm text-gray-400">{ingredientCount} total</span>
           </CardHeader>
-          <CardBody className="bg-default-100 grid gap-px p-0 md:grid-cols-2">
-            {ingredientCount === 0 && (
-              <p className="px-4 py-3 text-sm text-gray-400">No ingredients added yet.</p>
-            )}
 
-            {recipe.ingredients.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between gap-4 bg-white px-4 py-3 text-sm"
-              >
-                <span className="flex-1">{item.ingredient.name}</span>
-                <span className="shrink-0 text-gray-500">
-                  {item.quantity} {formatUnitLabel(item.ingredient.unit)}
-                </span>
-              </div>
-            ))}
+          <CardBody className="p-0">
+            {ingredientCount === 0 ? (
+              <p className="px-4 py-3 text-sm text-gray-400">No ingredients added yet.</p>
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {recipe.ingredients.map((item) => (
+                  <li
+                    key={item.id}
+                    className="flex items-center justify-between gap-4 px-4 py-3 text-sm"
+                  >
+                    <span className="flex-1 text-gray-800">{item.ingredient.name}</span>
+                    <span className="shrink-0 text-gray-500">
+                      {item.quantity} {formatUnitLabel(item.ingredient.unit)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardBody>
         </Card>
       </section>
 
+      {/* Steps */}
       {hasSteps && (
         <section>
           <Card>
             <CardHeader className="text-base font-medium">Steps</CardHeader>
             <CardBody>
               <ol className="list-decimal space-y-3 pl-5 text-sm text-gray-700">
-                {descriptionLines.map((line, index) => (
+                {steps.map((step, index) => (
                   <li key={index} className="leading-relaxed">
-                    {line}
+                    {step}
                   </li>
                 ))}
               </ol>

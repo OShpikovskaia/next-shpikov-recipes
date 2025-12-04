@@ -9,7 +9,7 @@ import { EMPTY_STATE_CONFIG } from '@/config/empty-state.config';
 import { useAuthStore } from '@/store/auth.store';
 import { useRecipeStore } from '@/store/recipe.store';
 import type { IRecipe } from '@/types/recipe';
-import { formatUnitLabel } from '@/utils/recipe-utils';
+import { formatUnitLabel } from '@/utils/recipes';
 
 interface RecipeCardProps {
   recipe: IRecipe;
