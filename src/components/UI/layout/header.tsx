@@ -43,8 +43,8 @@ const Header = () => {
               className={[
                 'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
                 isActive
-                  ? 'bg-[(--color-primary)] text-white shadow-sm'
-                  : 'text-slate-700 hover:bg-[(--color-primary-soft)] hover:text-[(--color-primary)]',
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'hover:bg-primary-soft hover:text-primary text-slate-700',
               ].join(' ')}
             >
               {item.label}
