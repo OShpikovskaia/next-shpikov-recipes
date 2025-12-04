@@ -32,12 +32,10 @@ const IngredientForm = () => {
 
   const [isPending, startTransition] = useTransition();
 
-  const handleSelectionChange =
-    (field: keyof IngredientsFormData) =>
-    (keys: Selection) => {
-      const value = selectionToValue(keys);
-      setFormData((prev) => ({ ...prev, [field]: value }));
-    };
+  const handleSelectionChange = (field: keyof IngredientsFormData) => (keys: Selection) => {
+    const value = selectionToValue(keys);
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,7 +54,7 @@ const IngredientForm = () => {
   };
 
   return (
-    <Form className="w-full space-y-4" onSubmit={handleSubmit}>
+    <Form className="mx-auto flex w-full max-w-xl flex-col gap-6 pb-16" onSubmit={handleSubmit}>
       {formError && <p className="text-sm text-red-500">{formError}</p>}
       <Input
         aria-label="Name"
