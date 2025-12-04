@@ -29,8 +29,8 @@ const RecipeDetails = ({ recipe }: RecipeDetailsProps) => {
 
       <section className="grid gap-6 lg:grid-cols-[minmax(240px,320px)_1fr]">
         <div className="relative aspect-square w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
-          {recipe.image ? (
-            <Image src={recipe.image} alt={recipe.name} fill className="object-cover" />
+          {recipe.imageUrl ? (
+            <Image src={recipe.imageUrl} alt={recipe.name} fill className="object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
               No image available
