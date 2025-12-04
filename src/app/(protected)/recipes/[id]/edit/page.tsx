@@ -6,25 +6,30 @@ import RecipeForm from '@/forms/recipe-form';
 import { useRecipeStore } from '@/store/recipe.store';
 
 const EditRecipePage = () => {
-  const { id } = useParams();
+  const params = useParams<{ id: string }>();
+  const id = params.id;
+
   const { recipes, isLoading, error } = useRecipeStore();
 
-  const recipe = recipes.find((recipe) => recipe.id === id);
+  const isInitial = recipes === null;
+  const hasRecipes = Array.isArray(recipes) && recipes.length > 0;
 
-  if (isLoading) {
+  const recipe = hasRecipes ? recipes.find((item) => item.id === id) : undefined;
+
+  if (isInitial || isLoading) {
     return <p className="text-center">Loading...</p>;
   }
 
-  if (error) {
+  if (error && !recipe) {
     return <p className="text-center text-red-500">{error}</p>;
   }
 
-  if (!isLoading && recipes.length > 0 && !recipe) {
+  if (!recipe && hasRecipes) {
     return <p className="text-center text-red-500">Recipe not found</p>;
   }
 
   if (!recipe) {
-    return <p className="text-center">Loading...</p>;
+    return <p className="text-center text-red-500">You don&apos;t have any recipes yet.</p>;
   }
 
   return (

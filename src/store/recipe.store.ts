@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { createRecipe, deleteRecipe, getrecipes, updateRecipe } from '@/actions/recipe';
 import type { IRecipe } from '@/types/recipe';
 
-interface IActionResult {
+interface ActionResult {
   success: boolean;
   recipe?: IRecipe;
   error?: string;
@@ -14,91 +14,121 @@ interface RecipeState {
   isLoading: boolean;
   error: string | null;
   loadRecipes: () => Promise<void>;
-  addRecipe: (formData: FormData) => Promise<IActionResult>;
-  updateRecipe: (id: string, formData: FormData) => Promise<IActionResult>;
-  removeRecipe: (id: string) => Promise<void>;
+  addRecipe: (formData: FormData) => Promise<ActionResult>;
+  updateRecipe: (id: string, formData: FormData) => Promise<ActionResult>;
+  removeRecipe: (id: string) => Promise<ActionResult>;
 }
 
 export const useRecipeStore = create<RecipeState>((set) => ({
   recipes: null,
   isLoading: false,
   error: null,
+
   loadRecipes: async () => {
     set({ isLoading: true, error: null });
+
     try {
       const result = await getrecipes();
+
       if (result.success) {
-        set({ recipes: result.recipes, isLoading: false });
+        set({
+          recipes: result.recipes,
+          isLoading: false,
+          error: null,
+        });
       } else {
-        set({ error: result.error, isLoading: false });
+        const message = result.error ?? 'Failed to load recipes';
+        set({
+          recipes: [],
+          isLoading: false,
+          error: message,
+        });
       }
     } catch (error) {
       console.error('Get recipes error: ', error);
-      set({ error: 'Get recipes error', isLoading: false, recipes: null });
+      const message = 'Get recipes error';
+      set({
+        recipes: [],
+        isLoading: false,
+        error: message,
+      });
     }
   },
 
-  addRecipe: async (formData: FormData) => {
+  addRecipe: async (formData: FormData): Promise<ActionResult> => {
     set({ error: null });
+
     try {
       const result = await createRecipe(formData);
 
-      if (result.success) {
+      if (result.success && result.recipe) {
         set((state) => ({
-          recipes: [...(state.recipes || []), result.recipe!],
-          isLoading: false,
+          recipes: [...(state.recipes ?? []), result.recipe!],
         }));
+
         return { success: true, recipe: result.recipe };
-      } else {
-        set({ error: result.error, isLoading: false });
-        return { success: false, error: result.error };
       }
+
+      const message = result.error ?? 'Creating recipe error';
+      set({ error: message });
+      return { success: false, error: message };
     } catch (error) {
-      console.error('Creating recipie  error: ', error);
-      set({ error: 'Creating recipie error', isLoading: false });
-      return { success: false, error: 'Creating recipe error' };
+      console.error('Creating recipe error: ', error);
+      const message = 'Creating recipe error';
+      set({ error: message });
+      return { success: false, error: message };
     }
   },
 
-  updateRecipe: async (id: string, formData: FormData) => {
+  updateRecipe: async (id: string, formData: FormData): Promise<ActionResult> => {
     set({ error: null });
+
     try {
       const result = await updateRecipe(id, formData);
 
-      if (result.success) {
+      if (result.success && result.recipe) {
         set((state) => ({
-          recipes: (state.recipes || []).map((recipe) =>
+          recipes: (state.recipes ?? []).map((recipe) =>
             recipe.id === id ? result.recipe! : recipe,
           ),
-          isLoading: false,
         }));
+
         return { success: true, recipe: result.recipe };
-      } else {
-        set({ error: result.error, isLoading: false });
-        return { success: false, error: result.error };
       }
+
+      const message = result.error ?? 'Updating recipe error';
+      set({ error: message });
+      return { success: false, error: message };
     } catch (error) {
-      console.error('Updating recipie error: ', error);
-      set({ error: 'Updating recipie error', isLoading: false });
-      return { success: false, error: 'Updating recipe error' };
+      console.error('Updating recipe error: ', error);
+      const message = 'Updating recipe error';
+      set({ error: message });
+      return { success: false, error: message };
     }
   },
 
-  removeRecipe: async (id: string) => {
+  removeRecipe: async (id: string): Promise<ActionResult> => {
     set({ error: null });
+
     try {
       const result = await deleteRecipe(id);
+
       if (result.success) {
         set((state) => ({
-          recipes: (state.recipes || []).filter((recipe) => recipe.id !== id),
-          isLoading: false,
+          recipes: (state.recipes ?? []).filter((recipe) => recipe.id !== id),
         }));
-      } else {
-        set({ error: result.error, isLoading: false });
+
+        return { success: true };
       }
+
+      const message = result.error ?? 'Delete recipe error';
+      set({ error: message });
+      return { success: false, error: message };
     } catch (error) {
-      console.error('Get recipes error: ', error);
-      set({ error: 'Get recipes error', isLoading: false });
+      console.error('Delete recipe error: ', error);
+      const message = 'Delete recipe error';
+      set({ error: message });
+      return { success: false, error: message };
     }
   },
 }));
