@@ -1,6 +1,23 @@
 'use server';
 
+import type { Ingredients, Recipe as PrismaRecipe, RecipeIngredient } from '@prisma/client';
+
+import type { IRecipe } from '@/types/recipe';
 import prisma from '@/utils/prisma';
+
+type DbRecipeWithIngredients = PrismaRecipe & {
+  ingredients: (RecipeIngredient & { ingredient: Ingredients })[];
+};
+
+const mapDbRecipeToRecipe = (db: DbRecipeWithIngredients): IRecipe => {
+  return {
+    id: db.id,
+    name: db.name,
+    description: db.description,
+    imageUrl: db.image ?? null,
+    ingredients: db.ingredients,
+  };
+};
 
 const DEFAULT_RECIPE_INCLUDE_INGREDIENTS = {
   ingredients: {
@@ -9,11 +26,14 @@ const DEFAULT_RECIPE_INCLUDE_INGREDIENTS = {
     },
   },
 };
-export const getrecipes = async () => {
+
+export const getRecipes = async () => {
   try {
-    const recipes = await prisma.recipe.findMany({
+    const dbRecipes = await prisma.recipe.findMany({
       include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
     });
+
+    const recipes = dbRecipes.map(mapDbRecipeToRecipe);
 
     return { success: true, recipes };
   } catch (error) {
@@ -39,13 +59,15 @@ export const createRecipe = async (formData: FormData) => {
           quantity,
         };
       });
+
     if (!name || !ingredients.length) {
       return {
         success: false,
         error: 'Name and at least one ingredient are required.',
       };
     }
-    const recipe = await prisma.recipe.create({
+
+    const dbRecipe = await prisma.recipe.create({
       data: {
         name,
         description,
@@ -60,7 +82,7 @@ export const createRecipe = async (formData: FormData) => {
       include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
     });
 
-    return { success: true, recipe };
+    return { success: true, recipe: mapDbRecipeToRecipe(dbRecipe) };
   } catch (error) {
     console.error('Create recipe error: ', error);
     return { success: false, error: 'Create recipe error' };
@@ -84,13 +106,15 @@ export const updateRecipe = async (id: string, formData: FormData) => {
           quantity,
         };
       });
+
     if (!name || !ingredients.length) {
       return {
         success: false,
         error: 'Name and at least one ingredient are required.',
       };
     }
-    const recipe = await prisma.recipe.update({
+
+    const dbRecipe = await prisma.recipe.update({
       where: { id },
       data: {
         name,
@@ -107,7 +131,7 @@ export const updateRecipe = async (id: string, formData: FormData) => {
       include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
     });
 
-    return { success: true, recipe };
+    return { success: true, recipe: mapDbRecipeToRecipe(dbRecipe) };
   } catch (error) {
     console.error('Updating recipes error: ', error);
     return { success: false, error: 'Updating recipes error' };
@@ -135,10 +159,12 @@ export const getRecipeById = async (id: string) => {
   if (!id) return null;
 
   try {
-    return await prisma.recipe.findUnique({
+    const dbRecipe = await prisma.recipe.findUnique({
       where: { id },
       include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
     });
+
+    return dbRecipe ? mapDbRecipeToRecipe(dbRecipe) : null;
   } catch (error) {
     console.error('getRecipeById error', error);
     return null;

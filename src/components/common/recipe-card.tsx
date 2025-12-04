@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button, Card } from '@heroui/react';
 
+import { EMPTY_STATE_CONFIG } from '@/config/empty-state.config';
 import { useAuthStore } from '@/store/auth.store';
 import { useRecipeStore } from '@/store/recipe.store';
 import type { IRecipe } from '@/types/recipe';
@@ -41,7 +42,7 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
         className="text-foreground flex flex-1 flex-col no-underline"
         aria-label={`View details for ${recipe.name}`}
       >
-        <div className="relative h-44 w-full bg-gray-100">
+        <div className="relative h-44 w-full bg-white">
           {recipe.imageUrl ? (
             <Image
               src={recipe.imageUrl}
@@ -50,9 +51,13 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
               className="object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm text-gray-500">
-              No image
-            </div>
+            <Image
+              src={EMPTY_STATE_CONFIG.recipeImageMissing.imageSrc}
+              alt={EMPTY_STATE_CONFIG.recipeImageMissing.alt}
+              fill
+              sizes="(min-width: 1024px) 320px, 100vw"
+              className="object-contain"
+            />
           )}
         </div>
 

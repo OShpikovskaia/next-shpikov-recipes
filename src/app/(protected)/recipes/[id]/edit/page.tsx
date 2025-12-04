@@ -34,7 +34,7 @@ const EditRecipePage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="mb-4 text-3xl font-bold">{recipe.name}</h1>
+      <h1 className="mb-4 text-center text-3xl font-bold">{recipe.name}</h1>
       <RecipeForm initialRecipe={recipe} />
     </div>
   );

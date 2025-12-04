@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { createRecipe, deleteRecipe, getrecipes, updateRecipe } from '@/actions/recipe';
+import { createRecipe, deleteRecipe, getRecipes, updateRecipe } from '@/actions/recipe';
 import type { IRecipe } from '@/types/recipe';
 
 interface ActionResult {
@@ -28,7 +28,7 @@ export const useRecipeStore = create<RecipeState>((set) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const result = await getrecipes();
+      const result = await getRecipes();
 
       if (result.success) {
         set({
