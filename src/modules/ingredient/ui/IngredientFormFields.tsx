@@ -134,8 +134,8 @@ const IngredientFormFields = ({
         onChange={(e) => onDescriptionChange(e.target.value)}
       />
 
-      <div className="flex w-full items-center justify-end">
-        <Button color="primary" type="submit" isLoading={isPending}>
+      <div className="flex w-full">
+        <Button color="primary" type="submit" isLoading={isPending} className="w-full">
           Add ingredient
         </Button>
       </div>

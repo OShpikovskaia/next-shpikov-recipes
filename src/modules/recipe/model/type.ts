@@ -13,5 +13,7 @@ export interface IRecipe {
   description: string;
   steps?: string;
   imageUrl?: string | null;
+  isPublic: boolean;
+  authorId: string | null;
   ingredients: IRecipeIngredient[];
 }
