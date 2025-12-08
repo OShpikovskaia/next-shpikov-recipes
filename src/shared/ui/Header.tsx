@@ -18,6 +18,8 @@ import {
 import { layoutConfig } from '@/shared/config/layout.config';
 import { siteConfig } from '@/shared/config/site.config';
 
+import { AUTH_STATUS, type SessionStatus } from '../model/auth-status';
+
 type NavItem = {
   href: string;
   label: string;
@@ -26,7 +28,7 @@ type NavItem = {
 export interface HeaderProps {
   navItems: NavItem[];
   isAuth: boolean;
-  status: 'loading' | 'authenticated' | 'unauthenticated';
+  status: SessionStatus;
   userEmail?: string | null;
   onSignout: () => void;
   onOpenLogin: () => void;
@@ -94,11 +96,11 @@ const Header = ({
         />
 
         {/* desktop auth */}
-        {status === 'loading' && (
+        {status === AUTH_STATUS.LOADING && (
           <span className="hidden text-xs text-gray-500 sm:inline">Checking session…</span>
         )}
 
-        {status !== 'loading' && isAuth && (
+        {status !== AUTH_STATUS.LOADING && isAuth && (
           <>
             <span className="hidden text-xs text-gray-500 sm:inline">
               Hello,&nbsp;
@@ -117,7 +119,7 @@ const Header = ({
           </>
         )}
 
-        {status !== 'loading' && !isAuth && (
+        {status !== AUTH_STATUS.LOADING && !isAuth && (
           <>
             <NavbarItem className="hidden sm:flex">
               <Button variant="flat" size="sm" onPress={onOpenLogin}>
@@ -155,9 +157,11 @@ const Header = ({
         <div className="my-2 border-t border-gray-200" />
 
         {/* mobile auth */}
-        {status === 'loading' && <p className="px-2 text-xs text-gray-500">Checking session…</p>}
+        {status === AUTH_STATUS.LOADING && (
+          <p className="px-2 text-xs text-gray-500">Checking session…</p>
+        )}
 
-        {status !== 'loading' && isAuth && (
+        {status !== AUTH_STATUS.LOADING && isAuth && (
           <div className="flex flex-col gap-2 px-2">
             <span className="text-xs text-gray-500">
               Hello,&nbsp;
@@ -174,7 +178,7 @@ const Header = ({
           </div>
         )}
 
-        {status !== 'loading' && !isAuth && (
+        {status !== AUTH_STATUS.LOADING && !isAuth && (
           <div className="flex flex-col gap-2 px-2">
             <Button
               size="sm"

@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Link from 'next/link';
 
-import AppLoader from '@/hoc/app-loader';
+import AppLoader from '@/app/providers/AppLoader';
+import Providers from '@/app/providers/Providers';
 import { auth } from '@/modules/auth/model/auth';
 import { AuthHeader } from '@/modules/auth/widgets/AuthHeader';
-import Providers from '@/providers/providers';
 import { layoutConfig } from '@/shared/config/layout.config';
 import { siteConfig } from '@/shared/config/site.config';
 import PageTitle from '@/shared/ui/PageTitle';

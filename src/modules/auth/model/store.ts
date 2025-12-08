@@ -1,7 +1,7 @@
 import type { Session } from 'next-auth';
 import { create } from 'zustand';
 
-type SessionStatus = 'authenticated' | 'unauthenticated' | 'loading';
+import { AUTH_STATUS, type SessionStatus } from '@/shared/model/auth-status';
 
 interface AuthState {
   isAuth: boolean;
@@ -12,11 +12,11 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
   isAuth: false,
-  status: 'loading',
+  status: AUTH_STATUS.LOADING,
   session: null,
   setAuthState: (status: SessionStatus, session: Session | null) =>
     set({
-      isAuth: status === 'authenticated',
+      isAuth: status === AUTH_STATUS.AUTHENTICATED,
       status,
       session,
     }),

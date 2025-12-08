@@ -8,6 +8,8 @@ import { useAuthStore } from '@/modules/auth/model/store';
 import { useIngredientStore } from '@/modules/ingredient/model/store';
 import { useRecipeStore } from '@/modules/recipe/model/store';
 
+import { AUTH_STATUS } from '../../shared/model/auth-status';
+
 interface AppLoaderProps {
   children: ReactNode;
 }
@@ -24,7 +26,7 @@ const AppLoader = ({ children }: AppLoaderProps) => {
   }, [session, status, setAuthState]);
 
   useEffect(() => {
-    if (status !== 'authenticated') {
+    if (status !== AUTH_STATUS.AUTHENTICATED) {
       return;
     }
 
@@ -32,7 +34,7 @@ const AppLoader = ({ children }: AppLoaderProps) => {
   }, [status, session?.user?.id, loadIngredients]);
 
   useEffect(() => {
-    if (status === 'loading') return;
+    if (status === AUTH_STATUS.LOADING) return;
 
     resetRecipes();
 
