@@ -1,11 +1,20 @@
-import PageContent from '@/components/common/page-content';
+import type { Metadata } from 'next';
 
-const About = () => {
+import RouteContentSection from '@/modules/static-page/widgets/RouteContentSection';
+import { siteConfig } from '@/shared/config/site.config';
+import PageContent from '@/shared/ui/PageContent';
+
+export const metadata: Metadata = {
+  title: `About | ${siteConfig.title}`,
+  description: siteConfig.description,
+};
+
+const AboutPage = () => {
   return (
-    <div>
-      <PageContent />
-    </div>
+    <PageContent>
+      <RouteContentSection pathname="/about" />
+    </PageContent>
   );
 };
 
-export default About;
+export default AboutPage;
