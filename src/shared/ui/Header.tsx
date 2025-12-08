@@ -14,6 +14,7 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from '@heroui/react';
+import clsx from 'clsx';
 
 import { layoutConfig } from '@/shared/config/layout.config';
 import { siteConfig } from '@/shared/config/site.config';
@@ -24,6 +25,18 @@ type NavItem = {
   href: string;
   label: string;
 };
+
+type NavVariant = 'desktop' | 'mobile';
+
+const getNavItemClass = (active: boolean, variant: NavVariant) =>
+  clsx(
+    'rounded-full text-sm font-medium',
+    variant === 'desktop' && 'px-4 py-1.5 transition-colors',
+    variant === 'mobile' && 'block px-4 py-2',
+    active
+      ? 'bg-primary text-white shadow-sm'
+      : 'text-slate-700 hover:bg-primary-soft hover:text-primary',
+  );
 
 export interface HeaderProps {
   navItems: NavItem[];
@@ -72,15 +85,7 @@ const Header = ({
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">
         {navItems.map((item) => (
           <NavbarItem key={item.href} className="px-0">
-            <Link
-              href={item.href}
-              className={[
-                'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
-                isActive(item.href)
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'hover:bg-primary-soft hover:text-primary text-slate-700',
-              ].join(' ')}
-            >
+            <Link href={item.href} className={getNavItemClass(isActive(item.href), 'desktop')}>
               {item.label}
             </Link>
           </NavbarItem>
@@ -141,12 +146,7 @@ const Header = ({
           <NavbarMenuItem key={item.href}>
             <Link
               href={item.href}
-              className={[
-                'block rounded-full px-4 py-2 text-sm font-medium',
-                isActive(item.href)
-                  ? 'bg-primary text-white'
-                  : 'hover:bg-primary-soft hover:text-primary text-slate-700',
-              ].join(' ')}
+              className={getNavItemClass(isActive(item.href), 'mobile')}
               onClick={() => setIsMenuOpen(false)}
             >
               {item.label}

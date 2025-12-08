@@ -3,6 +3,7 @@
 import { useTransition } from 'react';
 import Link from 'next/link';
 import { Button, Card } from '@heroui/react';
+import clsx from 'clsx';
 
 import { useAuthStore } from '@/modules/auth/model/store';
 import { useRecipeStore } from '@/modules/recipe/model/store';
@@ -26,9 +27,6 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
   const isOwner = isAuth && recipe.authorId && recipe.authorId === currentUserId;
 
   const visibilityLabel = recipe.isPublic ? 'Public' : isOwner ? 'Private' : null;
-  const visibilityClasses = recipe.isPublic
-    ? 'bg-green-50 text-green-700'
-    : 'bg-gray-100 text-gray-600';
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -57,10 +55,12 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
             <h2 className="line-clamp-1 text-lg font-semibold">{recipe.name}</h2>
             {visibilityLabel && (
               <span
-                className={[
-                  'shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium',
-                  visibilityClasses,
-                ].join(' ')}
+                className={clsx(
+                  'shrink-0 rounded-full border px-2 py-0.5 text-[11px] font-medium',
+                  recipe.isPublic
+                    ? 'border-emerald-100 bg-emerald-50 text-emerald-700'
+                    : 'border-slate-200 bg-slate-100 text-slate-600',
+                )}
               >
                 {visibilityLabel}
               </span>
