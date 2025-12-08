@@ -1,12 +1,12 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { Button, Card, CardBody, CardHeader } from '@heroui/react';
 
 import type { getRecipeById } from '@/modules/recipe/model/server-actions';
 import { formatUnitLabel } from '@/modules/recipe/model/utils';
-import { EMPTY_STATE_CONFIG } from '@/shared/config/empty-state.config';
+
+import RecipeImage from './RecipeImage';
 
 type RecipeWithIngredients = NonNullable<Awaited<ReturnType<typeof getRecipeById>>>;
 
@@ -35,19 +35,7 @@ const RecipeDetails = ({ recipe }: RecipeDetailsProps) => {
       </Button>
 
       <section className="grid gap-6 lg:grid-cols-[minmax(240px,320px)_1fr]">
-        <div className="relative aspect-square w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50">
-          {recipe.imageUrl ? (
-            <Image src={recipe.imageUrl} alt={recipe.name} fill className="object-cover" />
-          ) : (
-            <Image
-              src={EMPTY_STATE_CONFIG.recipeImageMissing.imageSrc}
-              alt={EMPTY_STATE_CONFIG.recipeImageMissing.alt}
-              fill
-              sizes="(min-width: 1024px) 320px, 100vw"
-              className="object-contain"
-            />
-          )}
-        </div>
+        <RecipeImage src={recipe.imageUrl} alt={`Image for recipe "${recipe.name}"`} />
 
         <div className="flex flex-col gap-4">
           <div>

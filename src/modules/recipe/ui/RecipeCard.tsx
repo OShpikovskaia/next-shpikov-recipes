@@ -1,7 +1,6 @@
 'use client';
 
 import { useTransition } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Button, Card } from '@heroui/react';
 
@@ -9,7 +8,8 @@ import { useAuthStore } from '@/modules/auth/model/store';
 import { useRecipeStore } from '@/modules/recipe/model/store';
 import type { IRecipe } from '@/modules/recipe/model/type';
 import { formatUnitLabel } from '@/modules/recipe/model/utils';
-import { EMPTY_STATE_CONFIG } from '@/shared/config/empty-state.config';
+
+import RecipeImage from './RecipeImage';
 
 interface RecipeCardProps {
   recipe: IRecipe;
@@ -50,24 +50,7 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
         className="text-foreground flex flex-1 flex-col no-underline"
         aria-label={`View details for ${recipe.name}`}
       >
-        <div className="relative h-44 w-full bg-white">
-          {recipe.imageUrl ? (
-            <Image
-              src={recipe.imageUrl}
-              alt={`Image for recipe "${recipe.name}"`}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <Image
-              src={EMPTY_STATE_CONFIG.recipeImageMissing.imageSrc}
-              alt={EMPTY_STATE_CONFIG.recipeImageMissing.alt}
-              fill
-              sizes="(min-width: 1024px) 320px, 100vw"
-              className="object-contain"
-            />
-          )}
-        </div>
+        <RecipeImage src={recipe.imageUrl} alt={`Image for recipe "${recipe.name}"`} />
 
         <div className="flex flex-1 flex-col gap-3 px-4 py-4 text-black">
           <div className="flex items-start justify-between gap-2">
