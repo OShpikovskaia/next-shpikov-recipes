@@ -1,4 +1,6 @@
+import type { Session } from 'next-auth';
 import NextAuth from 'next-auth';
+import type { JWT } from 'next-auth/jwt';
 import Credentials from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import bcryptjs from 'bcryptjs';
@@ -49,11 +51,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   secret: process.env.AUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }): Promise<JWT> {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
       }
       return token;
+    },
+
+    async session({ session, token }): Promise<Session> {
+      if (session.user) {
+        session.user.id = token.id ?? '';
+        session.user.email = token.email ?? session.user.email!;
+      }
+      return session;
     },
   },
 });

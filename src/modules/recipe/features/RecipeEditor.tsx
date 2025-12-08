@@ -89,7 +89,6 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
 
       if (result.success) {
         setFormData(initialState);
-        setIngredientFields([makeField()]);
         router.push('/');
       } else {
         setError(result.error || 'Error saving recipe');
