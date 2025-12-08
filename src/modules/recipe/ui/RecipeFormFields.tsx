@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Input, Select, SelectItem, Textarea } from '@heroui/react';
+import { Button, Input, Select, SelectItem, Switch, Textarea } from '@heroui/react';
 
 export interface IngredientField {
   id: string;
@@ -57,7 +57,7 @@ export const RecipeFormFields = ({
   isPending,
 }: RecipeFormFieldsProps) => {
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-6 pb-16">
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
       {error && <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
 
       <div className="w-full space-y-4">
@@ -113,6 +113,9 @@ export const RecipeFormFields = ({
           }}
           onChange={(e) => onChangeFormField('imageUrl', e.target.value)}
         />
+        <Switch name="isPublic" defaultSelected size="sm">
+          Visible to everyone
+        </Switch>
       </div>
 
       <section className="w-full space-y-3">
@@ -208,9 +211,8 @@ export const RecipeFormFields = ({
           ))}
         </div>
       </section>
-
-      <div className="mt-4 flex w-full justify-end">
-        <Button color="primary" type="submit" isLoading={isPending} className="px-8">
+      <div className="mt-8 flex flex-col">
+        <Button color="primary" type="submit" className="w-full" isLoading={isPending}>
           {isEditMode ? 'Save changes' : 'Create recipe'}
         </Button>
       </div>

@@ -11,24 +11,33 @@ import { useRecipeStore } from '@/modules/recipe/model/store';
 interface AppLoaderProps {
   children: ReactNode;
 }
+
 const AppLoader = ({ children }: AppLoaderProps) => {
   const { data: session, status } = useSession();
+
+  const { setAuthState } = useAuthStore();
   const { loadIngredients } = useIngredientStore();
-  const { loadRecipes } = useRecipeStore();
-  const { isAuth, setAuthState } = useAuthStore();
+  const { loadRecipes, reset: resetRecipes } = useRecipeStore();
 
   useEffect(() => {
     setAuthState(status, session);
   }, [session, status, setAuthState]);
 
   useEffect(() => {
-    if (!isAuth) return;
+    if (status !== 'authenticated') {
+      return;
+    }
+
     loadIngredients();
-  }, [isAuth, loadIngredients]);
+  }, [status, session?.user?.id, loadIngredients]);
 
   useEffect(() => {
+    if (status === 'loading') return;
+
+    resetRecipes();
+
     loadRecipes();
-  }, [loadRecipes]);
+  }, [status, session?.user?.id, resetRecipes, loadRecipes]);
 
   return <>{children}</>;
 };

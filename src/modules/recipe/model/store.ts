@@ -18,6 +18,7 @@ interface RecipeState {
   recipes: IRecipe[] | null;
   isLoading: boolean;
   error: string | null;
+  reset: () => void;
   loadRecipes: () => Promise<void>;
   addRecipe: (formData: FormData) => Promise<ActionResult>;
   updateRecipe: (id: string, formData: FormData) => Promise<ActionResult>;
@@ -28,9 +29,15 @@ export const useRecipeStore = create<RecipeState>((set) => ({
   recipes: null,
   isLoading: false,
   error: null,
+  reset: () =>
+    set({
+      recipes: null,
+      isLoading: false,
+      error: null,
+    }),
 
   loadRecipes: async () => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null, recipes: null });
 
     try {
       const result = await getRecipes();

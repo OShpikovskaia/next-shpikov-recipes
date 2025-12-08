@@ -101,7 +101,7 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
   const ingredientsOptions = ingredients || [];
 
   return (
-    <Form action={handleSubmit} className="mx-auto flex w-full max-w-xl flex-col gap-6 pb-16">
+    <Form action={handleSubmit} className="mx-auto flex w-full max-w-xl flex-col gap-6">
       <RecipeFormFields
         error={error}
         formData={formData}

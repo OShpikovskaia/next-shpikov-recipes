@@ -19,8 +19,16 @@ const INGREDIENT_PREVIEW_LIMIT = 3;
 
 const RecipeCard = ({ recipe }: RecipeCardProps) => {
   const { removeRecipe } = useRecipeStore();
-  const { isAuth } = useAuthStore();
+  const { isAuth, session } = useAuthStore();
   const [isPending, startTransition] = useTransition();
+
+  const currentUserId = session?.user?.id ?? null;
+  const isOwner = isAuth && recipe.authorId && recipe.authorId === currentUserId;
+
+  const visibilityLabel = recipe.isPublic ? 'Public' : isOwner ? 'Private' : null;
+  const visibilityClasses = recipe.isPublic
+    ? 'bg-green-50 text-green-700'
+    : 'bg-gray-100 text-gray-600';
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -62,7 +70,20 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
         </div>
 
         <div className="flex flex-1 flex-col gap-3 px-4 py-4 text-black">
-          <h2 className="line-clamp-1 text-lg font-semibold">{recipe.name}</h2>
+          <div className="flex items-start justify-between gap-2">
+            <h2 className="line-clamp-1 text-lg font-semibold">{recipe.name}</h2>
+            {visibilityLabel && (
+              <span
+                className={[
+                  'shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium',
+                  visibilityClasses,
+                ].join(' ')}
+              >
+                {visibilityLabel}
+              </span>
+            )}
+          </div>
+
           <p className="line-clamp-2 text-sm text-gray-600">
             {recipe.description || 'No description yet'}
           </p>

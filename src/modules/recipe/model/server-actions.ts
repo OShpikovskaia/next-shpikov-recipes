@@ -1,14 +1,22 @@
 'use server';
 
-import type { Ingredients, Recipe as PrismaRecipe, RecipeIngredient } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 
 import { auth } from '@/modules/auth/model/auth';
 import type { IRecipe } from '@/modules/recipe/model/type';
 import prisma from '@/shared/lib/prisma';
 
-type DbRecipeWithIngredients = PrismaRecipe & {
-  ingredients: (RecipeIngredient & { ingredient: Ingredients })[];
-};
+const RECIPE_INCLUDE = {
+  ingredients: {
+    include: {
+      ingredient: true,
+    },
+  },
+} satisfies Prisma.RecipeInclude;
+
+type DbRecipeWithIngredients = Prisma.RecipeGetPayload<{
+  include: typeof RECIPE_INCLUDE;
+}>;
 
 const mapDbRecipeToRecipe = (db: DbRecipeWithIngredients): IRecipe => {
   return {
@@ -17,22 +25,96 @@ const mapDbRecipeToRecipe = (db: DbRecipeWithIngredients): IRecipe => {
     description: db.description,
     steps: db.steps || '',
     imageUrl: db.image ?? null,
+    isPublic: db.isPublic,
+    authorId: db.authorId ?? null,
     ingredients: db.ingredients,
   };
 };
 
-const DEFAULT_RECIPE_INCLUDE_INGREDIENTS = {
-  ingredients: {
-    include: {
-      ingredient: true,
-    },
-  },
+type IngredientInput = {
+  ingredientId: string;
+  quantity: number;
+};
+
+type ParsedRecipeForm = {
+  name: string;
+  description: string;
+  steps: string;
+  imageUrl: string | null;
+  isPublic: boolean;
+  ingredients: IngredientInput[];
+};
+
+const parseRecipeForm = (formData: FormData): ParsedRecipeForm => {
+  const name = (formData.get('name') as string | null)?.trim() ?? '';
+  const description = (formData.get('description') as string | null)?.trim() ?? '';
+  const steps = (formData.get('steps') as string | null)?.trim() ?? '';
+  const rawImage = (formData.get('imageUrl') as string | null)?.trim() ?? '';
+  const imageUrl = rawImage.length ? rawImage : null;
+
+  const isPublic = formData.get('isPublic') != null;
+
+  const ingredients: IngredientInput[] = Array.from(formData.entries())
+    .filter(([key]) => key.startsWith('ingredient_'))
+    .map(([key, value]) => {
+      const index = key.split('_')[1]!;
+      const quantity = parseFloat(formData.get(`quantity_${index}`) as string);
+
+      return {
+        ingredientId: value as string,
+        quantity,
+      };
+    });
+
+  if (!name || !ingredients.length) {
+    throw new Error('Name and at least one ingredient are required.');
+  }
+
+  return {
+    name,
+    description,
+    steps,
+    imageUrl,
+    isPublic,
+    ingredients,
+  };
+};
+
+const getCurrentUserId = async (): Promise<string | null> => {
+  const session = await auth();
+  return session?.user?.id ?? null;
+};
+
+const assertCanModifyRecipe = async (recipeId: string, userId: string) => {
+  const recipe = await prisma.recipe.findUnique({
+    where: { id: recipeId },
+    select: { authorId: true },
+  });
+
+  if (!recipe) {
+    throw new Error('Recipe not found');
+  }
+
+  if (recipe.authorId && recipe.authorId !== userId) {
+    throw new Error('You cannot modify this recipe');
+  }
 };
 
 export const getRecipes = async () => {
   try {
+    const userId = await getCurrentUserId();
+
+    const where = userId
+      ? {
+          OR: [{ isPublic: true }, { authorId: userId }],
+        }
+      : {
+          isPublic: true,
+        };
+
     const dbRecipes = await prisma.recipe.findMany({
-      include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
+      where,
+      include: RECIPE_INCLUDE,
     });
 
     const recipes = dbRecipes.map(mapDbRecipeToRecipe);
@@ -45,34 +127,12 @@ export const getRecipes = async () => {
 
 export const createRecipe = async (formData: FormData) => {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const userId = await getCurrentUserId();
+    if (!userId) {
       return { success: false, error: 'Unauthorized' };
     }
 
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const steps = formData.get('steps') as string;
-    const imageUrl = formData.get('imageUrl') as string;
-
-    const ingredients = Array.from(formData.entries())
-      .filter(([key]) => key.startsWith('ingredient_'))
-      .map(([key, value]) => {
-        const index = key.split('_')[1];
-        const quantity = parseFloat(formData.get(`quantity_${index}`) as string);
-
-        return {
-          ingredientId: value as string,
-          quantity,
-        };
-      });
-
-    if (!name || !ingredients.length) {
-      return {
-        success: false,
-        error: 'Name and at least one ingredient are required.',
-      };
-    }
+    const { name, description, steps, imageUrl, isPublic, ingredients } = parseRecipeForm(formData);
 
     const dbRecipe = await prisma.recipe.create({
       data: {
@@ -80,6 +140,8 @@ export const createRecipe = async (formData: FormData) => {
         description,
         steps,
         image: imageUrl,
+        isPublic,
+        authorId: userId,
         ingredients: {
           create: ingredients.map(({ ingredientId, quantity }) => ({
             ingredient: { connect: { id: ingredientId } },
@@ -87,45 +149,26 @@ export const createRecipe = async (formData: FormData) => {
           })),
         },
       },
-      include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
+      include: RECIPE_INCLUDE,
     });
 
     return { success: true, recipe: mapDbRecipeToRecipe(dbRecipe) };
-  } catch {
-    return { success: false, error: 'Create recipe error' };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Create recipe error';
+    return { success: false, error: message };
   }
 };
 
 export const updateRecipe = async (id: string, formData: FormData) => {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const userId = await getCurrentUserId();
+    if (!userId) {
       return { success: false, error: 'Unauthorized' };
     }
 
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const steps = formData.get('steps') as string;
-    const imageUrl = formData.get('imageUrl') as string;
+    await assertCanModifyRecipe(id, userId);
 
-    const ingredients = Array.from(formData.entries())
-      .filter(([key]) => key.startsWith('ingredient_'))
-      .map(([key, value]) => {
-        const index = key.split('_')[1];
-        const quantity = parseFloat(formData.get(`quantity_${index}`) as string);
-
-        return {
-          ingredientId: value as string,
-          quantity,
-        };
-      });
-
-    if (!name || !ingredients.length) {
-      return {
-        success: false,
-        error: 'Name and at least one ingredient are required.',
-      };
-    }
+    const { name, description, steps, imageUrl, isPublic, ingredients } = parseRecipeForm(formData);
 
     const dbRecipe = await prisma.recipe.update({
       where: { id },
@@ -134,6 +177,7 @@ export const updateRecipe = async (id: string, formData: FormData) => {
         description,
         steps,
         image: imageUrl,
+        isPublic,
         ingredients: {
           deleteMany: {},
           create: ingredients.map(({ ingredientId, quantity }) => ({
@@ -142,21 +186,24 @@ export const updateRecipe = async (id: string, formData: FormData) => {
           })),
         },
       },
-      include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
+      include: RECIPE_INCLUDE,
     });
 
     return { success: true, recipe: mapDbRecipeToRecipe(dbRecipe) };
-  } catch {
-    return { success: false, error: 'Updating recipes error' };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Updating recipes error';
+    return { success: false, error: message };
   }
 };
 
 export const deleteRecipe = async (id: string) => {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const userId = await getCurrentUserId();
+    if (!userId) {
       return { success: false, error: 'Unauthorized' };
     }
+
+    await assertCanModifyRecipe(id, userId);
 
     await prisma.recipeIngredient.deleteMany({
       where: { recipeId: id },
@@ -167,8 +214,9 @@ export const deleteRecipe = async (id: string) => {
     });
 
     return { success: true };
-  } catch {
-    return { success: false, error: 'Deleting recipes error' };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Deleting recipes error';
+    return { success: false, error: message };
   }
 };
 
@@ -176,12 +224,20 @@ export const getRecipeById = async (id: string) => {
   if (!id) return null;
 
   try {
+    const userId = await getCurrentUserId();
+
     const dbRecipe = await prisma.recipe.findUnique({
       where: { id },
-      include: DEFAULT_RECIPE_INCLUDE_INGREDIENTS,
+      include: RECIPE_INCLUDE,
     });
 
-    return dbRecipe ? mapDbRecipeToRecipe(dbRecipe) : null;
+    if (!dbRecipe) return null;
+
+    if (!dbRecipe.isPublic && dbRecipe.authorId && dbRecipe.authorId !== userId) {
+      return null;
+    }
+
+    return mapDbRecipeToRecipe(dbRecipe);
   } catch {
     return null;
   }
