@@ -4,9 +4,9 @@ import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
-import { useAuthStore } from '@/store/auth.store';
-import { useIngredientStore } from '@/store/ingredient.store';
-import { useRecipeStore } from '@/store/recipe.store';
+import { useAuthStore } from '@/modules/auth/model/store';
+import { useIngredientStore } from '@/modules/ingredient/model/store';
+import { useRecipeStore } from '@/modules/recipe/model/store';
 
 interface AppLoaderProps {
   children: ReactNode;

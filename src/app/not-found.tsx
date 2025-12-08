@@ -1,6 +1,6 @@
 'use client';
 
-import EmptyState from '@/components/common/empty-state';
+import EmptyState from '@/shared/ui/EmptyState';
 
 const NotFoundPage = () => {
   return (

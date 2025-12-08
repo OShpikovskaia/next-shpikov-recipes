@@ -1,39 +1,21 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 
-import { getRecipeById } from '@/actions/recipe';
-import RecipeDetails from '@/components/common/recipe-details';
-import { siteConfig } from '@/config/site.config';
+import { getRecipeById } from '@/modules/recipe/model/server-actions';
+import { RecipeDetailsSection } from '@/modules/recipe/widgets/RecipeDetailsSection';
+import { siteConfig } from '@/shared/config/site.config';
 
-type ParamsPromise = Promise<{ id: string }>;
+interface PageProps {
+  params: { id: string };
+}
 
-const fetchRecipeOrThrow = async (params: ParamsPromise) => {
+export default async function RecipeDetailsPage({ params }: PageProps) {
   const { id } = await params;
-  const recipe = await getRecipeById(id);
+  return <RecipeDetailsSection id={id} />;
+}
 
-  if (!recipe) {
-    notFound();
-  }
-
-  return recipe;
-};
-
-const RecipeDetailsPage = async ({ params }: { params: ParamsPromise }) => {
-  const recipe = await fetchRecipeOrThrow(params);
-
-  return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-8">
-      <RecipeDetails recipe={recipe} />
-    </div>
-  );
-};
-
-export const generateMetadata = async ({
-  params,
-}: {
-  params: ParamsPromise;
-}): Promise<Metadata> => {
+export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
   const { id } = await params;
+
   const recipe = await getRecipeById(id);
 
   if (!recipe) {
@@ -48,5 +30,3 @@ export const generateMetadata = async ({
     description: recipe.description || siteConfig.description,
   };
 };
-
-export default RecipeDetailsPage;

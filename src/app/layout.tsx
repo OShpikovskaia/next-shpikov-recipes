@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Link from 'next/link';
 
-import { auth } from '@/auth/auth';
-import Header from '@/components/UI/layout/header';
-import PageTitle from '@/components/UI/layout/page-title';
-import { layoutConfig } from '@/config/layout.config';
-import { siteConfig } from '@/config/site.config';
 import AppLoader from '@/hoc/app-loader';
+import { auth } from '@/modules/auth/model/auth';
+import { AuthHeader } from '@/modules/auth/widgets/AuthHeader';
 import Providers from '@/providers/providers';
+import { layoutConfig } from '@/shared/config/layout.config';
+import { siteConfig } from '@/shared/config/site.config';
+import PageTitle from '@/shared/ui/PageTitle';
 
 import './globals.css';
 
@@ -41,7 +41,7 @@ export default async function RootLayout({
         <Providers session={session}>
           <AppLoader>
             <div className="flex min-h-screen flex-col">
-              <Header />
+              <AuthHeader />
 
               <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10">
                 <PageTitle />

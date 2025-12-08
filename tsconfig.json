@@ -28,7 +28,9 @@
     "noImplicitReturns": true,
 
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/shared/*": ["./src/shared/*"],
+      "@/modules/*": ["./src/modules/*"]
     }
   },
   "include": [

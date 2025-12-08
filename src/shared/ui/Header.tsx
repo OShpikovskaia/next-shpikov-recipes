@@ -1,0 +1,208 @@
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  Button,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
+} from '@heroui/react';
+
+import { layoutConfig } from '@/shared/config/layout.config';
+import { siteConfig } from '@/shared/config/site.config';
+
+type NavItem = {
+  href: string;
+  label: string;
+};
+
+export interface HeaderProps {
+  navItems: NavItem[];
+  isAuth: boolean;
+  status: 'loading' | 'authenticated' | 'unauthenticated';
+  userEmail?: string | null;
+  onSignout: () => void;
+  onOpenLogin: () => void;
+  onOpenSignup: () => void;
+}
+
+export const Logo = () => {
+  return <Image src="/logo.png" priority alt={siteConfig.title} width={26} height={26} />;
+};
+
+const Header = ({
+  navItems,
+  isAuth,
+  status,
+  userEmail,
+  onSignout,
+  onOpenLogin,
+  onOpenSignup,
+}: HeaderProps) => {
+  const path = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const isActive = (href: string) => path === href;
+
+  return (
+    <Navbar
+      className="border-b border-gray-200 bg-white/80 backdrop-blur-md"
+      maxWidth="xl"
+      style={{ height: `${layoutConfig.headerHeight}` }}
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
+    >
+      <NavbarBrand className="gap-2">
+        <Link href="/" className="flex items-center gap-2">
+          <Logo />
+          <p className="text-sm font-semibold text-slate-900">{siteConfig.title}</p>
+        </Link>
+      </NavbarBrand>
+
+      {/* desktop nav */}
+      <NavbarContent className="hidden gap-4 sm:flex" justify="center">
+        {navItems.map((item) => (
+          <NavbarItem key={item.href} className="px-0">
+            <Link
+              href={item.href}
+              className={[
+                'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+                isActive(item.href)
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'hover:bg-primary-soft hover:text-primary text-slate-700',
+              ].join(' ')}
+            >
+              {item.label}
+            </Link>
+          </NavbarItem>
+        ))}
+      </NavbarContent>
+
+      {/* right block */}
+      <NavbarContent justify="end" className="items-center gap-3">
+        {/* mobile burger */}
+        <NavbarMenuToggle
+          className="sm:hidden"
+          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+        />
+
+        {/* desktop auth */}
+        {status === 'loading' && (
+          <span className="hidden text-xs text-gray-500 sm:inline">Checking session…</span>
+        )}
+
+        {status !== 'loading' && isAuth && (
+          <>
+            <span className="hidden text-xs text-gray-500 sm:inline">
+              Hello,&nbsp;
+              <span className="font-medium text-slate-900">{userEmail}</span>!
+            </span>
+            <NavbarItem className="hidden sm:flex">
+              <Button
+                size="sm"
+                variant="flat"
+                className="bg-gray-100 text-xs font-medium text-gray-700 hover:bg-gray-200"
+                onPress={onSignout}
+              >
+                Sign out
+              </Button>
+            </NavbarItem>
+          </>
+        )}
+
+        {status !== 'loading' && !isAuth && (
+          <>
+            <NavbarItem className="hidden sm:flex">
+              <Button variant="flat" size="sm" onPress={onOpenLogin}>
+                Login
+              </Button>
+            </NavbarItem>
+            <NavbarItem className="hidden sm:flex">
+              <Button color="primary" size="sm" onPress={onOpenSignup}>
+                Sign up
+              </Button>
+            </NavbarItem>
+          </>
+        )}
+      </NavbarContent>
+
+      {/* mobile menu */}
+      <NavbarMenu>
+        {navItems.map((item) => (
+          <NavbarMenuItem key={item.href}>
+            <Link
+              href={item.href}
+              className={[
+                'block rounded-full px-4 py-2 text-sm font-medium',
+                isActive(item.href)
+                  ? 'bg-primary text-white'
+                  : 'hover:bg-primary-soft hover:text-primary text-slate-700',
+              ].join(' ')}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {item.label}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+
+        <div className="my-2 border-t border-gray-200" />
+
+        {/* mobile auth */}
+        {status === 'loading' && <p className="px-2 text-xs text-gray-500">Checking session…</p>}
+
+        {status !== 'loading' && isAuth && (
+          <div className="flex flex-col gap-2 px-2">
+            <span className="text-xs text-gray-500">
+              Hello,&nbsp;
+              <span className="font-medium text-slate-900">{userEmail}</span>!
+            </span>
+            <Button
+              size="sm"
+              variant="flat"
+              className="self-start bg-gray-100 text-xs font-medium text-gray-700 hover:bg-gray-200"
+              onPress={onSignout}
+            >
+              Sign out
+            </Button>
+          </div>
+        )}
+
+        {status !== 'loading' && !isAuth && (
+          <div className="flex flex-col gap-2 px-2">
+            <Button
+              size="sm"
+              variant="flat"
+              onPress={() => {
+                setIsMenuOpen(false);
+                onOpenLogin();
+              }}
+              className="self-start"
+            >
+              Login
+            </Button>
+            <Button
+              size="sm"
+              color="primary"
+              onPress={() => {
+                setIsMenuOpen(false);
+                onOpenSignup();
+              }}
+              className="self-start"
+            >
+              Sign up
+            </Button>
+          </div>
+        )}
+      </NavbarMenu>
+    </Navbar>
+  );
+};
+
+export default Header;

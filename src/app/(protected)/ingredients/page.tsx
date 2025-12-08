@@ -1,15 +1,7 @@
-'use client';
-
-import IngredientsTable from '@/components/UI/tables/ingredients-table';
-import IngredientForm from '@/forms/ingredient.form';
+import IngredientsManager from '@/modules/ingredient/widgets/IngredientsManager';
 
 const IngredientsPage = () => {
-  return (
-    <div>
-      <IngredientForm />
-      <IngredientsTable />
-    </div>
-  );
+  return <IngredientsManager />;
 };
 
 export default IngredientsPage;
