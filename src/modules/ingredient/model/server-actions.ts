@@ -4,9 +4,9 @@ import type { Ingredients } from '@prisma/client';
 
 import { auth } from '@/modules/auth/model/auth';
 import prisma from '@/shared/lib/prisma';
-import type { IngredientsFormData } from '@/shared/types/form-data';
 
 import { ingredientSchema } from './schema';
+import type { IngredientsFormData } from './type';
 
 type IngredientErrorResult = { success: false; error: string };
 type CreateIngredientResult = { success: true; ingredient: Ingredients } | IngredientErrorResult;

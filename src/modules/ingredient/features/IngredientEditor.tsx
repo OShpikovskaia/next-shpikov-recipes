@@ -7,8 +7,8 @@ import type { Selection } from '@heroui/react';
 
 import { CATEGORY_OPTIONS, UNIT_OPTIONS } from '@/modules/ingredient/model/select-options';
 import { useIngredientStore } from '@/modules/ingredient/model/store';
-import type { IngredientsFormData } from '@/shared/types/form-data';
 
+import type { IngredientsFormData } from '../model/type';
 import IngredientFormFields from '../ui/IngredientFormFields';
 
 const INITIAL_STATE: IngredientsFormData = {

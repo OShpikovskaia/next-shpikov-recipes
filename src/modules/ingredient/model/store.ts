@@ -5,8 +5,7 @@ import {
   deleteIngredient,
   getIngredients,
 } from '@/modules/ingredient/model/server-actions';
-import type { IIngredient } from '@/modules/ingredient/model/type';
-import type { IngredientsFormData } from '@/shared/types/form-data';
+import type { IIngredient, IngredientsFormData } from '@/modules/ingredient/model/type';
 
 interface ActionFeedback {
   success: boolean;

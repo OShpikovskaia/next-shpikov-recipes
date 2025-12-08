@@ -2,9 +2,8 @@
 
 import { saltAndHashPassword } from '@/shared/lib/password';
 import prisma from '@/shared/lib/prisma';
-import type { IFormData } from '@/shared/types/form-data';
 
-import type { SignupResult } from './type';
+import type { IFormData, SignupResult } from './type';
 
 export const signupUser = async (formData: IFormData): Promise<SignupResult> => {
   const { email, password, confirmPassword } = formData;

@@ -2,7 +2,7 @@
 
 import { Button, Input, Select, type Selection, SelectItem } from '@heroui/react';
 
-import type { IngredientsFormData } from '@/shared/types/form-data';
+import type { IngredientsFormData } from '../model/type';
 
 type Option = {
   value: string;
