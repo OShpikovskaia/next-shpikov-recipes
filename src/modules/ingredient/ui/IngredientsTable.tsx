@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import type { SortDescriptor } from '@heroui/react';
 import {
   Button,
   Table,
@@ -12,58 +13,43 @@ import {
   Tooltip,
 } from '@heroui/react';
 
-import { useAuthStore } from '@/modules/auth/model/store';
-import { useIngredientStore } from '@/modules/ingredient/model/store';
-import { useIngredientsTableState } from '@/modules/ingredient/model/useIngredientsTableState';
 import {
   formatPricePerUnit,
   getCategoryLabel,
   getUnitLabel,
 } from '@/modules/ingredient/model/utils';
-import { AUTH_STATUS } from '@/shared/model/auth-status';
 import { TrashIcon } from '@/shared/ui/icons/TrashIcon';
 import { ListCountInfo } from '@/shared/ui/ListCountInfo';
 import { SearchBar } from '@/shared/ui/SearchBar';
 
-const IngredientsTable = () => {
-  const { ingredients, removeIngredient, isLoading, error } = useIngredientStore();
-  const { isAuth, status } = useAuthStore();
+import type { IIngredient } from '../model/type';
 
-  const {
-    searchValue,
-    setSearchValue,
-    sortDescriptor,
-    setSortDescriptor,
-    filteredAndSorted,
-    hasAnyIngredients,
-    isSearching,
-  } = useIngredientsTableState({ ingredients });
+interface IngredientsTableProps {
+  rows: IIngredient[];
+  totalCount: number;
+  isLoading: boolean;
+  error: string | null;
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+  sortDescriptor: SortDescriptor;
+  onSortChange: (sort: SortDescriptor) => void;
+  onDelete: (id: string) => void;
+}
 
-  const isInitial = ingredients === null;
-
-  if (status === AUTH_STATUS.LOADING) {
-    return (
-      <div className="mt-4 flex w-full justify-center">
-        <p className="text-default-500 text-sm">Checking your access…</p>
-      </div>
-    );
-  }
-
-  if (!isAuth) {
-    return <p className="text-danger mt-4 text-sm">You are not logged in.</p>;
-  }
-
-  if (isInitial) {
-    return (
-      <div className="mt-4 flex w-full justify-center">
-        <p className="text-default-500 text-sm">Loading ingredients...</p>
-      </div>
-    );
-  }
-
-  const handleDelete = async (id: string) => {
-    await removeIngredient(id);
-  };
+const IngredientsTable = ({
+  rows,
+  totalCount,
+  isLoading,
+  error,
+  searchValue,
+  onSearchChange,
+  sortDescriptor,
+  onSortChange,
+  onDelete,
+}: IngredientsTableProps) => {
+  const hasAnyIngredients = totalCount > 0;
+  const isSearching = searchValue.trim().length > 0;
+  const visibleCount = rows.length;
 
   return (
     <div className="mt-4 space-y-2">
@@ -72,7 +58,7 @@ const IngredientsTable = () => {
       <Table
         aria-label="Ingredients table"
         sortDescriptor={sortDescriptor}
-        onSortChange={setSortDescriptor}
+        onSortChange={onSortChange}
         radius="lg"
         shadow="sm"
         isStriped
@@ -90,7 +76,7 @@ const IngredientsTable = () => {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <SearchBar
               value={searchValue}
-              onChange={setSearchValue}
+              onChange={onSearchChange}
               className="w-full sm:max-w-md"
               size="sm"
               placeholder="Search ingredients by name or description..."
@@ -99,8 +85,8 @@ const IngredientsTable = () => {
 
             {hasAnyIngredients && (
               <ListCountInfo
-                total={ingredients?.length ?? 0}
-                visible={filteredAndSorted.length}
+                total={totalCount}
+                visible={visibleCount}
                 label="ingredients"
                 className="text-default-400 [&_span]:text-default-600"
               />
@@ -153,7 +139,7 @@ const IngredientsTable = () => {
             ) : null
           }
         >
-          {filteredAndSorted.map(({ id, name, category, unit, pricePerUnit, description }) => (
+          {rows.map(({ id, name, category, unit, pricePerUnit, description }) => (
             <TableRow key={id}>
               <TableCell>{name}</TableCell>
               <TableCell>{getCategoryLabel(category)}</TableCell>
@@ -170,7 +156,7 @@ const IngredientsTable = () => {
                       variant="light"
                       aria-label={`Delete ingredient ${name}`}
                       className="rounded-full"
-                      onPress={() => handleDelete(id)}
+                      onPress={() => onDelete(id)}
                     >
                       <TrashIcon className="h-4 w-4" />
                     </Button>

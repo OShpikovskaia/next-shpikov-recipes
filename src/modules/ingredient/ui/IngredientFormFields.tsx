@@ -3,6 +3,7 @@
 import { Button, Input, Select, type Selection, SelectItem } from '@heroui/react';
 
 import type { IngredientsFormData } from '../model/type';
+import { validatePriceInput } from '../model/validation';
 
 type Option = {
   value: string;
@@ -112,12 +113,7 @@ const IngredientFormFields = ({
           }}
           onChange={(e) => onPricePerUnitChange(e.target.value)}
           endContent={<span className="text-gray-500">$</span>}
-          validate={(value) => {
-            if (!value) return 'Price is required';
-            const num = Number(value);
-            if (Number.isNaN(num) || num < 0) return 'Price must be positive';
-            return null;
-          }}
+          validate={validatePriceInput}
         />
       </div>
 

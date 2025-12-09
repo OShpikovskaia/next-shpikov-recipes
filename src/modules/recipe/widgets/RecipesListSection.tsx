@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@heroui/react';
 
@@ -12,7 +12,7 @@ import { ListCountInfo } from '@/shared/ui/ListCountInfo';
 import { SearchBar } from '@/shared/ui/SearchBar';
 
 import type { FilterType } from '../model/type';
-import { getVisibleRecipes } from '../model/utils';
+import { useRecipesListState } from '../model/useRecipesListState';
 import { RecipeFilterTabs } from '../ui/RecipeFilterTabs';
 
 const RecipesListSection = () => {
@@ -22,45 +22,21 @@ const RecipesListSection = () => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const isInitial = recipes === null;
-  const hasRecipes = Array.isArray(recipes) && recipes.length > 0;
-
   const currentUserId = session?.user?.id ?? null;
-
-  const baseVisibleRecipes = useMemo(() => {
-    if (!recipes) return [];
-
-    return getVisibleRecipes({
-      recipes,
-      isAuth,
-      filter,
-      currentUserId,
-    });
-  }, [recipes, isAuth, filter, currentUserId]);
-
-  const filteredRecipes = useMemo(() => {
-    const normalizedSearch = searchQuery.trim().toLowerCase();
-    if (!normalizedSearch) return baseVisibleRecipes;
-
-    return baseVisibleRecipes.filter((recipe) => recipe.name.toLowerCase().includes(q));
-  }, [baseVisibleRecipes, searchQuery]);
-
-  const { publicCount, myPrivateCount } = useMemo(() => {
-    if (!recipes) {
-      return { publicCount: 0, myPrivateCount: 0 };
-    }
-
-    const publicCount = recipes.filter((r) => r.isPublic).length;
-
-    const myPrivateCount =
-      currentUserId != null
-        ? recipes.filter((r) => !r.isPublic && r.authorId === currentUserId).length
-        : 0;
-
-    return { publicCount, myPrivateCount };
-  }, [recipes, currentUserId]);
-
-  const totalInCurrentFilter = baseVisibleRecipes.length;
+  const {
+    isInitial,
+    hasRecipes,
+    filteredRecipes,
+    publicCount,
+    myPrivateCount,
+    totalInCurrentFilter,
+  } = useRecipesListState({
+    recipes,
+    isAuth,
+    currentUserId,
+    filter,
+    searchQuery,
+  });
 
   const showSearchEmptyState =
     hasRecipes && !isLoading && searchQuery.trim().length > 0 && filteredRecipes.length === 0;

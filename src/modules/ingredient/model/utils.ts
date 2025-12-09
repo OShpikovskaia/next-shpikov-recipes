@@ -18,7 +18,7 @@ const UNIT_LABELS = buildLabelMap(UNIT_OPTIONS);
 export const getCategoryLabel = (value: string) => CATEGORY_LABELS[value] ?? value;
 export const getUnitLabel = (value: string) => UNIT_LABELS[value] ?? value;
 
-export const formatPricePerUnit = (price: number | null | undefined) => {
+export const formatPricePerUnit = (price?: number | null) => {
   if (price === null || price === undefined) {
     return '-';
   }
