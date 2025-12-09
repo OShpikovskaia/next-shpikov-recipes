@@ -27,7 +27,7 @@ const IngredientsManager = () => {
   if (status === AUTH_STATUS.LOADING) {
     return (
       <div className="mt-4 flex w-full justify-center">
-        <p className="text-default-500 text-sm">Checking your access…</p>
+        <p className="text-default-500 text-sm">Syncing list of ingredients…</p>
       </div>
     );
   }

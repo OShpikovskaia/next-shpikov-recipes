@@ -102,7 +102,7 @@ const Header = ({
 
         {/* desktop auth */}
         {status === AUTH_STATUS.LOADING && (
-          <span className="hidden text-xs text-gray-500 sm:inline">Checking session…</span>
+          <span className="hidden text-xs text-gray-500 sm:inline">Syncing your recipes…</span>
         )}
 
         {status !== AUTH_STATUS.LOADING && isAuth && (
@@ -158,7 +158,7 @@ const Header = ({
 
         {/* mobile auth */}
         {status === AUTH_STATUS.LOADING && (
-          <p className="px-2 text-xs text-gray-500">Checking session…</p>
+          <p className="px-2 text-xs text-gray-500">Syncing your recipes…</p>
         )}
 
         {status !== AUTH_STATUS.LOADING && isAuth && (
