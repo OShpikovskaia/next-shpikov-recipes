@@ -17,3 +17,5 @@ export interface IRecipe {
   authorId: string | null;
   ingredients: IRecipeIngredient[];
 }
+
+export type FilterType = 'all' | 'public' | 'mine';
