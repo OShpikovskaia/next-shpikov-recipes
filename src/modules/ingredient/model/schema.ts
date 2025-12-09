@@ -1,4 +1,5 @@
-import z from 'zod';
+import { z } from 'zod';
+
 export const ingredientSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
   category: z.enum(['VEGETABLES', 'FRUITS', 'MEAT', 'DAIRY', 'SPICES', 'OTHER']),
