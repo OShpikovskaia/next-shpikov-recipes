@@ -20,6 +20,7 @@ const AppLoader = ({ children }: AppLoaderProps) => {
   const { setAuthState } = useAuthStore();
   const { loadIngredients } = useIngredientStore();
   const { loadRecipes, reset: resetRecipes } = useRecipeStore();
+  const { reset: resetIngredients } = useIngredientStore();
 
   useEffect(() => {
     setAuthState(status, session);
@@ -37,9 +38,9 @@ const AppLoader = ({ children }: AppLoaderProps) => {
     if (status === AUTH_STATUS.LOADING) return;
 
     resetRecipes();
-
+    resetIngredients();
     loadRecipes();
-  }, [status, session?.user?.id, resetRecipes, loadRecipes]);
+  }, [status, session?.user?.id, resetRecipes, loadRecipes, resetIngredients]);
 
   return <>{children}</>;
 };

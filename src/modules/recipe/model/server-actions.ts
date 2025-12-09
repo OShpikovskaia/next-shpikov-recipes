@@ -6,6 +6,8 @@ import { auth } from '@/modules/auth/model/auth';
 import type { IRecipe } from '@/modules/recipe/model/type';
 import prisma from '@/shared/lib/prisma';
 
+import { parseValidQuantity } from './utils';
+
 const RECIPE_INCLUDE = {
   ingredients: {
     include: {
@@ -145,7 +147,7 @@ export const createRecipe = async (formData: FormData) => {
         ingredients: {
           create: ingredients.map(({ ingredientId, quantity }) => ({
             ingredient: { connect: { id: ingredientId } },
-            quantity,
+            quantity: parseValidQuantity(quantity),
           })),
         },
       },
@@ -154,7 +156,11 @@ export const createRecipe = async (formData: FormData) => {
 
     return { success: true, recipe: mapDbRecipeToRecipe(dbRecipe) };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Create recipe error';
+    const message =
+      error instanceof Error && error.message.startsWith('Quantity')
+        ? error.message
+        : 'Create recipe error';
+
     return { success: false, error: message };
   }
 };
@@ -182,7 +188,7 @@ export const updateRecipe = async (id: string, formData: FormData) => {
           deleteMany: {},
           create: ingredients.map(({ ingredientId, quantity }) => ({
             ingredient: { connect: { id: ingredientId } },
-            quantity,
+            quantity: parseValidQuantity(quantity),
           })),
         },
       },
@@ -191,7 +197,10 @@ export const updateRecipe = async (id: string, formData: FormData) => {
 
     return { success: true, recipe: mapDbRecipeToRecipe(dbRecipe) };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Updating recipes error';
+    const message =
+      error instanceof Error && error.message.startsWith('Quantity')
+        ? error.message
+        : 'Updating recipes error';
     return { success: false, error: message };
   }
 };

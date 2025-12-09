@@ -101,7 +101,7 @@ const RecipeCard = ({ recipe }: RecipeCardProps) => {
           </Button>
         </Link>
 
-        {isAuth && (
+        {isAuth && isOwner && (
           <div className="flex gap-2">
             <Link href={`/recipes/${recipe.id}/edit`}>
               <Button color="primary" variant="light" size="sm">

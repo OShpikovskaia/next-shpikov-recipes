@@ -38,7 +38,7 @@ const getNavItemClass = (active: boolean, variant: NavVariant) =>
       : 'text-slate-700 hover:bg-primary-soft hover:text-primary',
   );
 
-export interface HeaderProps {
+interface HeaderProps {
   navItems: NavItem[];
   isAuth: boolean;
   status: SessionStatus;
@@ -48,7 +48,7 @@ export interface HeaderProps {
   onOpenSignup: () => void;
 }
 
-export const Logo = () => {
+const Logo = () => {
   return <Image src="/logo.png" priority alt={siteConfig.title} width={26} height={26} />;
 };
 
