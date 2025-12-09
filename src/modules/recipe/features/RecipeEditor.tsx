@@ -77,8 +77,14 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
     setIngredientFields((prev) => prev.map((f) => (f.id === id ? { ...f, [field]: value } : f)));
   };
 
-  const handleChangeFormField = (field: keyof RecipeFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChangeFormField = <K extends keyof RecipeFormData>(
+    field: K,
+    value: RecipeFormData[K],
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleSubmit = async (formDataNative: FormData) => {
