@@ -116,6 +116,8 @@ export const RecipeFormFields = ({
         />
         <Switch
           isSelected={formData.isPublic}
+          name="isPublic"
+          size="sm"
           onValueChange={(nextValue) => onChangeFormField('isPublic', nextValue)}
         >
           Visible to everyone
