@@ -8,11 +8,12 @@ import { useAuthStore } from '@/modules/auth/model/store';
 import { useRecipeStore } from '@/modules/recipe/model/store';
 import RecipeCard from '@/modules/recipe/ui/RecipeCard';
 import EmptyState from '@/shared/ui/EmptyState';
+import { ListCountInfo } from '@/shared/ui/ListCountInfo';
+import { SearchBar } from '@/shared/ui/SearchBar';
 
 import type { FilterType } from '../model/type';
 import { getVisibleRecipes } from '../model/utils';
 import { RecipeFilterTabs } from '../ui/RecipeFilterTabs';
-import { RecipeSearchBar } from '../ui/RecipeSearchBar';
 
 const RecipesListSection = () => {
   const { recipes, isLoading, error } = useRecipeStore();
@@ -26,16 +27,23 @@ const RecipesListSection = () => {
 
   const currentUserId = session?.user?.id ?? null;
 
-  const filteredRecipes = useMemo(() => {
+  const baseVisibleRecipes = useMemo(() => {
     if (!recipes) return [];
 
-    const base = getVisibleRecipes({ recipes, isAuth, filter, currentUserId });
+    return getVisibleRecipes({
+      recipes,
+      isAuth,
+      filter,
+      currentUserId,
+    });
+  }, [recipes, isAuth, filter, currentUserId]);
 
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return base;
+  const filteredRecipes = useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+    if (!normalizedSearch) return baseVisibleRecipes;
 
-    return base.filter((recipe) => recipe.name.toLowerCase().includes(q));
-  }, [recipes, isAuth, filter, currentUserId, searchQuery]);
+    return baseVisibleRecipes.filter((recipe) => recipe.name.toLowerCase().includes(q));
+  }, [baseVisibleRecipes, searchQuery]);
 
   const { publicCount, myPrivateCount } = useMemo(() => {
     if (!recipes) {
@@ -51,6 +59,8 @@ const RecipesListSection = () => {
 
     return { publicCount, myPrivateCount };
   }, [recipes, currentUserId]);
+
+  const totalInCurrentFilter = baseVisibleRecipes.length;
 
   const showSearchEmptyState =
     hasRecipes && !isLoading && searchQuery.trim().length > 0 && filteredRecipes.length === 0;
@@ -119,23 +129,22 @@ const RecipesListSection = () => {
       )}
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <RecipeSearchBar
+        <SearchBar
           value={searchQuery}
           onChange={setSearchQuery}
           className="w-full sm:max-w-xs"
+          placeholder="Search recipes..."
+          size="sm"
+          aria-label="Search recipes"
         />
 
         {hasRecipes && (
-          <p className="text-xs text-gray-500">
-            Showing <span className="font-semibold text-gray-700">{filteredRecipes.length}</span>
-            {recipes && (
-              <>
-                {' '}
-                of <span className="font-semibold text-gray-700">{recipes.length}</span>
-              </>
-            )}{' '}
-            recipes
-          </p>
+          <ListCountInfo
+            total={totalInCurrentFilter}
+            visible={filteredRecipes.length}
+            label="recipes"
+            className="text-gray-500"
+          />
         )}
       </div>
 

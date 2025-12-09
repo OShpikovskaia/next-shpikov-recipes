@@ -24,6 +24,7 @@ const initialState: RecipeFormData = {
   description: '',
   imageUrl: '',
   steps: '',
+  isPublic: true,
 };
 
 const makeField = (overrides?: Partial<IngredientField>): IngredientField => ({
@@ -41,6 +42,7 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
     description: initialRecipe?.description ?? initialState.description,
     imageUrl: initialRecipe?.imageUrl ?? initialState.imageUrl,
     steps: initialRecipe?.steps ?? initialState.steps,
+    isPublic: initialRecipe?.isPublic ?? initialState.isPublic,
   });
 
   const [ingredientFields, setIngredientFields] = useState<IngredientField[]>(

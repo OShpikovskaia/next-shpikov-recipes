@@ -13,6 +13,7 @@ export interface RecipeFormData {
   description: string;
   imageUrl: string;
   steps: string;
+  isPublic: boolean;
 }
 
 interface IngredientOption {
@@ -113,7 +114,12 @@ export const RecipeFormFields = ({
           }}
           onChange={(e) => onChangeFormField('imageUrl', e.target.value)}
         />
-        <Switch name="isPublic" defaultSelected size="sm">
+        <Switch
+          name="isPublic"
+          isSelected={formData.isPublic}
+          size="sm"
+          onChange={(e) => onChangeFormField('isPublic', e.target.value)}
+        >
           Visible to everyone
         </Switch>
       </div>
