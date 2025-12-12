@@ -20,7 +20,8 @@ const INGREDIENT_PREVIEW_LIMIT = 3;
 
 const RecipeCard = ({ recipe }: RecipeCardProps) => {
   const { removeRecipe } = useRecipeActions();
-  const { isAuth, session } = useAuthStore();
+  const isAuth = useAuthStore((state) => state.isAuth);
+  const session = useAuthStore((state) => state.session);
   const [isPending, startTransition] = useTransition();
 
   const currentUserId = session?.user?.id ?? null;

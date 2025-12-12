@@ -5,8 +5,8 @@ import { useState, useTransition } from 'react';
 import { Form } from '@heroui/form';
 import type { Selection } from '@heroui/react';
 
+import { useIngredientActions } from '@/modules/ingredient/model/hooks/useIngredientActions';
 import { CATEGORY_OPTIONS, UNIT_OPTIONS } from '@/modules/ingredient/model/select-options';
-import { useIngredientStore } from '@/modules/ingredient/model/store';
 
 import type { IngredientsFormData } from '../model/type';
 import IngredientFormFields from '../ui/IngredientFormFields';
@@ -29,31 +29,34 @@ export const IngredientEditor = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [formData, setFormData] = useState<IngredientsFormData>(INITIAL_STATE);
 
-  const { addIngredient } = useIngredientStore();
+  const { addIngredient } = useIngredientActions();
   const [isPending, startTransition] = useTransition();
 
   const handleChangeField = (field: keyof IngredientsFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSelectionChange = (field: 'category' | 'unit') => (keys: Selection) => {
-    const value = selectionToValue(keys);
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const handleSelectionChange =
+    (field: 'category' | 'unit') =>
+    (keys: Selection): void => {
+      const value = selectionToValue(keys);
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isPending) return;
 
-    startTransition(async () => {
-      const result = await addIngredient(formData);
+    startTransition(() => {
+      void addIngredient(formData).then((result) => {
+        if (!result.success) {
+          setFormError(result.error ?? 'Unable to add ingredient.');
+          return;
+        }
 
-      if (!result.success) {
-        setFormError(result.error ?? 'Unable to add ingredient.');
-        return;
-      }
-
-      setFormError(null);
-      setFormData(INITIAL_STATE);
+        setFormError(null);
+        setFormData(INITIAL_STATE);
+      });
     });
   };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { createRecipe, deleteRecipe, getRecipes, updateRecipe } from '../server-actions';
 import { useRecipeStore } from '../store';
@@ -13,11 +13,11 @@ interface ActionResult {
 }
 
 export const useRecipeActions = () => {
-  const setLoading = useRecipeStore((s) => s.setLoading);
-  const setError = useRecipeStore((s) => s.setError);
-  const setRecipes = useRecipeStore((s) => s.setRecipes);
-  const upsertRecipe = useRecipeStore((s) => s.upsertRecipe);
-  const removeRecipeLocal = useRecipeStore((s) => s.removeRecipeLocal);
+  const setLoading = useRecipeStore((state) => state.setLoading);
+  const setError = useRecipeStore((state) => state.setError);
+  const setRecipes = useRecipeStore((state) => state.setRecipes);
+  const upsertRecipe = useRecipeStore((state) => state.upsertRecipe);
+  const removeRecipeLocal = useRecipeStore((state) => state.removeRecipeLocal);
 
   const loadRecipes = useCallback(async () => {
     setLoading(true);
@@ -85,5 +85,8 @@ export const useRecipeActions = () => {
     [setError, removeRecipeLocal],
   );
 
-  return { loadRecipes, addRecipe, editRecipe, removeRecipe };
+  return useMemo(
+    () => ({ loadRecipes, addRecipe, editRecipe, removeRecipe }),
+    [loadRecipes, addRecipe, editRecipe, removeRecipe],
+  );
 };

@@ -10,7 +10,9 @@ import { siteConfig } from '@/shared/config/site.config';
 import Header from '@/shared/ui/Header';
 
 export const AuthHeader = () => {
-  const { isAuth, session, status } = useAuthStore();
+  const isAuth = useAuthStore((state) => state.isAuth);
+  const session = useAuthStore((state) => state.session);
+  const status = useAuthStore((state) => state.status);
 
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);

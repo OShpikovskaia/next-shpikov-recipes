@@ -21,8 +21,11 @@ interface RecipesListSectionProps {
 }
 
 const RecipesListSection: FC<RecipesListSectionProps> = ({ initialRecipes }) => {
-  const { recipes: storeRecipes, isLoading, error } = useRecipeStore();
-  const { isAuth, session } = useAuthStore();
+  const storeRecipes = useRecipeStore((state) => state.recipes);
+  const isLoading = useRecipeStore((state) => state.isLoading);
+  const error = useRecipeStore((state) => state.error);
+  const isAuth = useAuthStore((state) => state.isAuth);
+  const session = useAuthStore((state) => state.session);
   const currentUserId = session?.user?.id ?? null;
 
   const recipes = storeRecipes ?? initialRecipes;

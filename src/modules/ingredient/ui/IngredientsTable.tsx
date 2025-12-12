@@ -34,6 +34,7 @@ interface IngredientsTableProps {
   sortDescriptor: SortDescriptor;
   onSortChange: (sort: SortDescriptor) => void;
   onDelete: (id: string) => void;
+  currentUserId: string | null;
 }
 
 const IngredientsTable = ({
@@ -46,6 +47,7 @@ const IngredientsTable = ({
   sortDescriptor,
   onSortChange,
   onDelete,
+  currentUserId,
 }: IngredientsTableProps) => {
   const hasAnyIngredients = totalCount > 0;
   const isSearching = searchValue.trim().length > 0;
@@ -139,32 +141,46 @@ const IngredientsTable = ({
             ) : null
           }
         >
-          {rows.map(({ id, name, category, unit, pricePerUnit, description }) => (
-            <TableRow key={id}>
-              <TableCell>{name}</TableCell>
-              <TableCell>{getCategoryLabel(category)}</TableCell>
-              <TableCell>{getUnitLabel(unit)}</TableCell>
-              <TableCell>{formatPricePerUnit(pricePerUnit)}</TableCell>
-              <TableCell className="max-w-xs truncate">{description || '-'}</TableCell>
-              <TableCell>
-                <div className="flex items-center justify-end gap-1">
-                  <Tooltip color="danger" content="Delete ingredient">
-                    <Button
-                      isIconOnly
-                      size="sm"
-                      color="danger"
-                      variant="light"
-                      aria-label={`Delete ingredient ${name}`}
-                      className="rounded-full"
-                      onPress={() => onDelete(id)}
-                    >
-                      <TrashIcon className="h-4 w-4" />
-                    </Button>
-                  </Tooltip>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
+          {rows.map(({ id, name, category, unit, pricePerUnit, description, authorId }) => {
+            const canDelete = Boolean(currentUserId && authorId && authorId === currentUserId);
+
+            const tooltipText = canDelete
+              ? 'Delete ingredient'
+              : 'Only the author can delete this ingredient';
+
+            return (
+              <TableRow key={id}>
+                <TableCell>{name}</TableCell>
+                <TableCell>{getCategoryLabel(category)}</TableCell>
+                <TableCell>{getUnitLabel(unit)}</TableCell>
+                <TableCell>{formatPricePerUnit(pricePerUnit)}</TableCell>
+                <TableCell className="max-w-xs truncate">{description || '-'}</TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-end gap-1">
+                    <Tooltip color={canDelete ? 'danger' : 'default'} content={tooltipText}>
+                      <span className="inline-flex">
+                        <Button
+                          isIconOnly
+                          size="sm"
+                          color="danger"
+                          variant="light"
+                          aria-label={`Delete ingredient ${name}`}
+                          className="rounded-full"
+                          isDisabled={!canDelete}
+                          onPress={() => {
+                            if (!canDelete) return;
+                            onDelete(id);
+                          }}
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      </span>
+                    </Tooltip>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
 

@@ -7,6 +7,7 @@ export interface IIngredient {
   description?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
+  authorId: string | null;
 }
 
 export interface IngredientsFormData {

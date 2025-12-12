@@ -12,12 +12,13 @@ model User {
   email    String @unique
   password String
 
-  createAt DateTime @default(now()) @map("create_at")
-  updateAt DateTime @updatedAt @map("update_at")
+  createdAt DateTime @default(now()) @map("create_at")
+  updatedAt DateTime @updatedAt @map("update_at")
 
   accounts Account[]
   sessions Session[]
   recipes  Recipe[]  @relation("UserRecipes")
+  ingredients Ingredient[] @relation("UserIngredients")
 
   @@map("users")
 }
@@ -61,18 +62,23 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-model Ingredients {
+model Ingredient {
   id           String   @id @default(cuid())
   name         String
   category     Category
   unit         Unit
   pricePerUnit Float?
   description  String?
-
-  createAt DateTime           @default(now()) @map("create_at")
-  updateAt DateTime           @updatedAt @map("update_at")
+  normalizedName String   @map("normalized_name")
+  createdAt DateTime           @default(now()) @map("create_at")
+  updatedAt DateTime           @updatedAt @map("update_at")
   recipes  RecipeIngredient[]
 
+  author   User?   @relation("UserIngredients", fields: [authorId], references: [id], onDelete: SetNull)
+  authorId String? @map("author_id")
+
+  @@unique([normalizedName])
+  @@index([authorId])
   @@map("ingredients")
 }
 
@@ -116,7 +122,7 @@ model RecipeIngredient {
   id           String      @id @default(cuid())
   recipe       Recipe      @relation(fields: [recipeId], references: [id])
   recipeId     String
-  ingredient   Ingredients @relation(fields: [ingredientId], references: [id])
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
   ingredientId String
   quantity     Float
 

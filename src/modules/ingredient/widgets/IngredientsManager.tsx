@@ -13,8 +13,14 @@ import { IngredientEditor } from '../features/IngredientEditor';
 import IngredientsTable from '../ui/IngredientsTable';
 
 const IngredientsManager = () => {
-  const { status, isAuth } = useAuthStore();
-  const { ingredients, removeIngredient, isLoading, error } = useIngredientStore();
+  const status = useAuthStore((state) => state.status);
+  const isAuth = useAuthStore((state) => state.isAuth);
+  const currentUserId = useAuthStore((s) => s.session?.user?.id ?? null);
+
+  const ingredients = useIngredientStore((state) => state.ingredients);
+  const removeIngredient = useIngredientStore((state) => state.removeIngredientLocal);
+  const isLoading = useIngredientStore((state) => state.isLoading);
+  const error = useIngredientStore((state) => state.error);
 
   const [searchValue, setSearchValue] = useState('');
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
@@ -78,6 +84,7 @@ const IngredientsManager = () => {
         sortDescriptor={sortDescriptor}
         onSortChange={setSortDescriptor}
         onDelete={handleDelete}
+        currentUserId={currentUserId}
       />
     </>
   );

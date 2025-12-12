@@ -57,7 +57,7 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
       : [makeField()],
   );
 
-  const { ingredients } = useIngredientStore();
+  const ingredients = useIngredientStore((state) => state.ingredients);
   const { addRecipe, editRecipe: updateRecipe } = useRecipeActions();
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
