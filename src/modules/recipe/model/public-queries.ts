@@ -1,6 +1,6 @@
 import 'server-only';
 
-import type { IRecipe } from '@/modules/recipe/model/type';
+import type { IRecipe } from '@/modules/recipe/model/types';
 import prisma from '@/shared/lib/prisma';
 
 import { mapDbRecipeToRecipe, RECIPE_INCLUDE } from './db';
@@ -35,15 +35,4 @@ export const getPublicRecipeIdsForBuild = async (limit = 20): Promise<string[]> 
   });
 
   return rows.map((r) => r.id);
-};
-
-export const getRecipeByIdForOwner = async (id: string): Promise<IRecipe | null> => {
-  if (!id) return null;
-
-  const dbRecipe = await prisma.recipe.findFirst({
-    where: { id },
-    include: RECIPE_INCLUDE,
-  });
-
-  return dbRecipe ? mapDbRecipeToRecipe(dbRecipe) : null;
 };

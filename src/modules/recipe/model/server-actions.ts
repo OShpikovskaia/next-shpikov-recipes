@@ -1,21 +1,11 @@
 'use server';
 
-import type { Prisma } from '@prisma/client';
-
 import { auth } from '@/modules/auth/model/auth';
-import type { IRecipe } from '@/modules/recipe/model/type';
+import type { IRecipe } from '@/modules/recipe/model/types';
 import prisma from '@/shared/lib/prisma';
 
-import { mapDbRecipeToRecipe } from './db';
-import { parseValidQuantity } from './utils';
-
-const RECIPE_INCLUDE = {
-  ingredients: {
-    include: {
-      ingredient: true,
-    },
-  },
-} satisfies Prisma.RecipeInclude;
+import { mapDbRecipeToRecipe, RECIPE_INCLUDE } from './db';
+import { parseValidQuantity } from './utils/server';
 
 type IngredientInput = {
   ingredientId: string;
@@ -81,7 +71,7 @@ const assertCanModifyRecipe = async (recipeId: string, userId: string) => {
     throw new Error('Recipe not found');
   }
 
-  if (recipe.authorId && recipe.authorId !== userId) {
+  if (!recipe.authorId || recipe.authorId !== userId) {
     throw new Error('You cannot modify this recipe');
   }
 };
@@ -103,6 +93,7 @@ export const getRecipes = async (): Promise<GetRecipesResult> => {
     const dbRecipes = await prisma.recipe.findMany({
       where,
       include: RECIPE_INCLUDE,
+      orderBy: { updatedAt: 'desc' },
     });
 
     const recipes = dbRecipes.map(mapDbRecipeToRecipe);

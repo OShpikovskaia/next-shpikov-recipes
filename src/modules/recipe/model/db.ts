@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
 
-import type { IRecipe } from './type';
+import type { IRecipe } from './types';
 
 export const RECIPE_INCLUDE = {
   ingredients: {

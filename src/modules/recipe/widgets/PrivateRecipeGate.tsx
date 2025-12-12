@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
 import { getRecipeById } from '@/modules/recipe/model/server-actions';
-import type { IRecipe } from '@/modules/recipe/model/type';
+import type { IRecipe } from '@/modules/recipe/model/types';
 import EmptyState from '@/shared/ui/EmptyState';
 
 import RecipeDetails from '../ui/RecipeDetails';

@@ -12,8 +12,8 @@ import EmptyState from '@/shared/ui/EmptyState';
 import { ListCountInfo } from '@/shared/ui/ListCountInfo';
 import { SearchBar } from '@/shared/ui/SearchBar';
 
-import type { FilterType, IRecipe } from '../model/type';
-import { useRecipesListState } from '../model/useRecipesListState';
+import { useRecipesListState } from '../model/hooks/useRecipesListState';
+import type { FilterType, IRecipe } from '../model/types';
 import { RecipeFilterTabs } from '../ui/RecipeFilterTabs';
 
 interface RecipesListSectionProps {

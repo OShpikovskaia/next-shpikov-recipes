@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import type { IRecipe } from '@/modules/recipe/model/type';
+import type { IRecipe } from '@/modules/recipe/model/types';
 
 interface RecipeState {
   recipes: IRecipe[] | null;

@@ -3,7 +3,7 @@
 import type { FC } from 'react';
 import clsx from 'clsx';
 
-import type { FilterType } from '../model/type';
+import type { FilterType } from '../model/types';
 
 const getFilterButtonClass = (current: FilterType, value: FilterType) =>
   clsx(

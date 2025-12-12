@@ -2,8 +2,8 @@
 
 import { useMemo } from 'react';
 
-import type { FilterType, IRecipe } from './type';
-import { getVisibleRecipes } from './utils';
+import type { FilterType, IRecipe } from '../types';
+import { getVisibleRecipes } from '../utils/client';
 
 interface UseRecipesListStateArgs {
   recipes: IRecipe[];

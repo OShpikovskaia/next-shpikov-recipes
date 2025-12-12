@@ -2,9 +2,9 @@
 
 import { useCallback } from 'react';
 
-import { createRecipe, deleteRecipe, getRecipes, updateRecipe } from './server-actions';
-import { useRecipeStore } from './store';
-import type { IRecipe } from './type';
+import { createRecipe, deleteRecipe, getRecipes, updateRecipe } from '../server-actions';
+import { useRecipeStore } from '../store';
+import type { IRecipe } from '../types';
 
 interface ActionResult {
   success: boolean;

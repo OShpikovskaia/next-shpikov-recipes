@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { Button, Card, CardBody, CardHeader } from '@heroui/react';
 
-import { formatUnitLabel } from '@/modules/recipe/model/utils';
+import { formatUnitLabel } from '@/modules/recipe/model/utils/client';
 
-import type { IRecipe } from '../model/type';
+import type { IRecipe } from '../model/types';
 import RecipeImage from './RecipeImage';
 
 interface RecipeDetailsProps {

@@ -6,8 +6,8 @@ import { useSession } from 'next-auth/react';
 
 import { useAuthStore } from '@/modules/auth/model/store';
 import { useIngredientStore } from '@/modules/ingredient/model/store';
+import { useRecipeActions } from '@/modules/recipe/model/hooks/useRecipeActions';
 import { useRecipeStore } from '@/modules/recipe/model/store';
-import { useRecipeActions } from '@/modules/recipe/model/useRecipeActions';
 import { AUTH_STATUS } from '@/shared/model/auth-status';
 
 interface AppLoaderProps {

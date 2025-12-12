@@ -6,10 +6,10 @@ import { Button, Card } from '@heroui/react';
 import clsx from 'clsx';
 
 import { useAuthStore } from '@/modules/auth/model/store';
-import type { IRecipe } from '@/modules/recipe/model/type';
-import { formatUnitLabel } from '@/modules/recipe/model/utils';
+import type { IRecipe } from '@/modules/recipe/model/types';
+import { formatUnitLabel } from '@/modules/recipe/model/utils/client';
 
-import { useRecipeActions } from '../model/useRecipeActions';
+import { useRecipeActions } from '../model/hooks/useRecipeActions';
 import RecipeImage from './RecipeImage';
 
 interface RecipeCardProps {

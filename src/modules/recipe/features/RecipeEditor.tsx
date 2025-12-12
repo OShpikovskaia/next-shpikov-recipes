@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation';
 import { Form } from '@heroui/react';
 
 import { useIngredientStore } from '@/modules/ingredient/model/store';
-import type { IRecipe } from '@/modules/recipe/model/type';
+import type { IRecipe } from '@/modules/recipe/model/types';
 import {
   type IngredientField,
   type RecipeFormData,
   RecipeFormFields,
 } from '@/modules/recipe/ui/RecipeFormFields';
 
-import { useRecipeActions } from '../model/useRecipeActions';
+import { useRecipeActions } from '../model/hooks/useRecipeActions';
 
 interface RecipeEditorProps {
   initialRecipe?: IRecipe;
