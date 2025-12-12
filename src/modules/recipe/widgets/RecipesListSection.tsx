@@ -1,5 +1,6 @@
 'use client';
 
+import type { FC } from 'react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@heroui/react';
@@ -11,37 +12,36 @@ import EmptyState from '@/shared/ui/EmptyState';
 import { ListCountInfo } from '@/shared/ui/ListCountInfo';
 import { SearchBar } from '@/shared/ui/SearchBar';
 
-import type { FilterType } from '../model/type';
+import type { FilterType, IRecipe } from '../model/type';
 import { useRecipesListState } from '../model/useRecipesListState';
 import { RecipeFilterTabs } from '../ui/RecipeFilterTabs';
 
-const RecipesListSection = () => {
-  const { recipes, isLoading, error } = useRecipeStore();
+interface RecipesListSectionProps {
+  initialRecipes: IRecipe[];
+}
+
+const RecipesListSection: FC<RecipesListSectionProps> = ({ initialRecipes }) => {
+  const { recipes: storeRecipes, isLoading, error } = useRecipeStore();
   const { isAuth, session } = useAuthStore();
+  const currentUserId = session?.user?.id ?? null;
+
+  const recipes = storeRecipes ?? initialRecipes;
 
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const currentUserId = session?.user?.id ?? null;
-  const {
-    isInitial,
-    hasRecipes,
-    filteredRecipes,
-    publicCount,
-    myPrivateCount,
-    totalInCurrentFilter,
-  } = useRecipesListState({
-    recipes,
-    isAuth,
-    currentUserId,
-    filter,
-    searchQuery,
-  });
+  const { hasRecipes, filteredRecipes, publicCount, myPrivateCount, totalInCurrentFilter } =
+    useRecipesListState({
+      recipes,
+      isAuth,
+      currentUserId,
+      filter,
+      searchQuery,
+    });
 
-  const showSearchEmptyState =
-    hasRecipes && !isLoading && searchQuery.trim().length > 0 && filteredRecipes.length === 0;
+  const showInitialLoading = storeRecipes === null && initialRecipes.length === 0 && isLoading;
 
-  if (isInitial) {
+  if (showInitialLoading) {
     return (
       <div className="flex w-full justify-center py-16">
         <p className="text-sm text-gray-500">Loading recipes...</p>
@@ -81,6 +81,9 @@ const RecipesListSection = () => {
     );
   }
 
+  const showSearchEmptyState =
+    hasRecipes && !isLoading && searchQuery.trim().length > 0 && filteredRecipes.length === 0;
+
   return (
     <div className="flex w-full flex-col gap-6 pb-12">
       {isAuth && (
@@ -100,6 +103,7 @@ const RecipesListSection = () => {
               </span>
             </div>
           )}
+
           <RecipeFilterTabs value={filter} onChange={setFilter} />
         </>
       )}
@@ -125,7 +129,6 @@ const RecipesListSection = () => {
       </div>
 
       {error && <p className="text-sm text-red-500">{error}</p>}
-
       {isLoading && hasRecipes && <p className="text-xs text-gray-400">Updating recipes…</p>}
 
       {showSearchEmptyState ? (

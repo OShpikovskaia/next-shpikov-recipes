@@ -6,10 +6,10 @@ import { Button, Card } from '@heroui/react';
 import clsx from 'clsx';
 
 import { useAuthStore } from '@/modules/auth/model/store';
-import { useRecipeStore } from '@/modules/recipe/model/store';
 import type { IRecipe } from '@/modules/recipe/model/type';
 import { formatUnitLabel } from '@/modules/recipe/model/utils';
 
+import { useRecipeActions } from '../model/useRecipeActions';
 import RecipeImage from './RecipeImage';
 
 interface RecipeCardProps {
@@ -19,7 +19,7 @@ interface RecipeCardProps {
 const INGREDIENT_PREVIEW_LIMIT = 3;
 
 const RecipeCard = ({ recipe }: RecipeCardProps) => {
-  const { removeRecipe } = useRecipeStore();
+  const { removeRecipe } = useRecipeActions();
   const { isAuth, session } = useAuthStore();
   const [isPending, startTransition] = useTransition();
 

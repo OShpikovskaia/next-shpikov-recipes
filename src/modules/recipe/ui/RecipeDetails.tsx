@@ -3,15 +3,13 @@
 import Link from 'next/link';
 import { Button, Card, CardBody, CardHeader } from '@heroui/react';
 
-import type { getRecipeById } from '@/modules/recipe/model/server-actions';
 import { formatUnitLabel } from '@/modules/recipe/model/utils';
 
+import type { IRecipe } from '../model/type';
 import RecipeImage from './RecipeImage';
 
-type RecipeWithIngredients = NonNullable<Awaited<ReturnType<typeof getRecipeById>>>;
-
 interface RecipeDetailsProps {
-  recipe: RecipeWithIngredients;
+  recipe: IRecipe;
 }
 
 const RecipeDetails = ({ recipe }: RecipeDetailsProps) => {

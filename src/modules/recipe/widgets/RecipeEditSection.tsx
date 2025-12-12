@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 
-import { getRecipeById } from '@/modules/recipe/model/server-actions';
+import { getRecipeByIdForOwner } from '@/modules/recipe/model/server-actions';
 
 import RecipeEditor from '../features/RecipeEditor';
 
 export const RecipeEditSection = async ({ id }: { id: string }) => {
-  const recipe = await getRecipeById(id);
+  const recipe = await getRecipeByIdForOwner(id);
 
   if (!recipe) {
     notFound();

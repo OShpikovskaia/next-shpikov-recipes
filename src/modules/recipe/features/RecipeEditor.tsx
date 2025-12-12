@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import { Form } from '@heroui/react';
 
 import { useIngredientStore } from '@/modules/ingredient/model/store';
-import { useRecipeStore } from '@/modules/recipe/model/store';
 import type { IRecipe } from '@/modules/recipe/model/type';
 import {
   type IngredientField,
   type RecipeFormData,
   RecipeFormFields,
 } from '@/modules/recipe/ui/RecipeFormFields';
+
+import { useRecipeActions } from '../model/useRecipeActions';
 
 interface RecipeEditorProps {
   initialRecipe?: IRecipe;
@@ -57,7 +58,7 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
   );
 
   const { ingredients } = useIngredientStore();
-  const { addRecipe, updateRecipe } = useRecipeStore();
+  const { addRecipe, editRecipe: updateRecipe } = useRecipeActions();
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 

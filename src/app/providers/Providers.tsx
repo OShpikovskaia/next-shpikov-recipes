@@ -7,7 +7,7 @@ import { HeroUIProvider } from '@heroui/react';
 
 interface ProvidersProps {
   children: ReactNode;
-  session: Session | null;
+  session?: Session | null;
 }
 
 const Providers = ({ children, session }: ProvidersProps) => {

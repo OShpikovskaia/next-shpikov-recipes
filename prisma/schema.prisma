@@ -101,9 +101,12 @@ model Recipe {
   image       String? @map("image_url")
 
   isPublic Boolean @default(true)
-  aauthor  User?   @relation("UserRecipes", fields: [authorId], references: [id])
+  author  User?   @relation("UserRecipes", fields: [authorId], references: [id])
   authorId String? @map("author_id")
 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
   ingredients RecipeIngredient[]
 
   @@map("recipes")

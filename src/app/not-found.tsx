@@ -1,5 +1,3 @@
-'use client';
-
 import EmptyState from '@/shared/ui/EmptyState';
 
 const NotFoundPage = () => {

@@ -7,8 +7,8 @@ import { useSession } from 'next-auth/react';
 import { useAuthStore } from '@/modules/auth/model/store';
 import { useIngredientStore } from '@/modules/ingredient/model/store';
 import { useRecipeStore } from '@/modules/recipe/model/store';
-
-import { AUTH_STATUS } from '../../shared/model/auth-status';
+import { useRecipeActions } from '@/modules/recipe/model/useRecipeActions';
+import { AUTH_STATUS } from '@/shared/model/auth-status';
 
 interface AppLoaderProps {
   children: ReactNode;
@@ -17,30 +17,34 @@ interface AppLoaderProps {
 const AppLoader = ({ children }: AppLoaderProps) => {
   const { data: session, status } = useSession();
 
-  const { setAuthState } = useAuthStore();
-  const { loadIngredients } = useIngredientStore();
-  const { loadRecipes, reset: resetRecipes } = useRecipeStore();
-  const { reset: resetIngredients } = useIngredientStore();
+  const setAuthState = useAuthStore((s) => s.setAuthState);
+
+  const resetRecipes = useRecipeStore((s) => s.reset);
+  const resetIngredients = useIngredientStore((s) => s.reset);
+  const loadIngredients = useIngredientStore((s) => s.loadIngredients);
+
+  const { loadRecipes } = useRecipeActions();
 
   useEffect(() => {
     setAuthState(status, session);
-  }, [session, status, setAuthState]);
-
-  useEffect(() => {
-    if (status !== AUTH_STATUS.AUTHENTICATED) {
-      return;
-    }
-
-    loadIngredients();
-  }, [status, session?.user?.id, loadIngredients]);
+  }, [status, session, setAuthState]);
 
   useEffect(() => {
     if (status === AUTH_STATUS.LOADING) return;
 
-    resetRecipes();
-    resetIngredients();
-    loadRecipes();
-  }, [status, session?.user?.id, resetRecipes, loadRecipes, resetIngredients]);
+    if (status === AUTH_STATUS.UNAUTHENTICATED) {
+      resetRecipes();
+      resetIngredients();
+      return;
+    }
+
+    if (status === AUTH_STATUS.AUTHENTICATED) {
+      if (!session?.user?.id) return;
+
+      void loadIngredients();
+      void loadRecipes();
+    }
+  }, [status, session?.user?.id, loadIngredients, loadRecipes, resetIngredients, resetRecipes]);
 
   return <>{children}</>;
 };

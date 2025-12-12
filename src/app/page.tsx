@@ -1,9 +1,9 @@
-'use client';
-
+import { getPublicRecipes } from '@/modules/recipe/model/public-queries';
 import RecipesListSection from '@/modules/recipe/widgets/RecipesListSection';
 
-const Home = () => {
-  return <RecipesListSection />;
-};
+export const revalidate = 60;
 
-export default Home;
+export default async function Home() {
+  const recipes = await getPublicRecipes();
+  return <RecipesListSection initialRecipes={recipes} />;
+}

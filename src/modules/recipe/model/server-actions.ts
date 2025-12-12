@@ -6,6 +6,7 @@ import { auth } from '@/modules/auth/model/auth';
 import type { IRecipe } from '@/modules/recipe/model/type';
 import prisma from '@/shared/lib/prisma';
 
+import { mapDbRecipeToRecipe } from './db';
 import { parseValidQuantity } from './utils';
 
 const RECIPE_INCLUDE = {
@@ -15,23 +16,6 @@ const RECIPE_INCLUDE = {
     },
   },
 } satisfies Prisma.RecipeInclude;
-
-type DbRecipeWithIngredients = Prisma.RecipeGetPayload<{
-  include: typeof RECIPE_INCLUDE;
-}>;
-
-const mapDbRecipeToRecipe = (db: DbRecipeWithIngredients): IRecipe => {
-  return {
-    id: db.id,
-    name: db.name,
-    description: db.description,
-    steps: db.steps || '',
-    imageUrl: db.image ?? null,
-    isPublic: db.isPublic,
-    authorId: db.authorId ?? null,
-    ingredients: db.ingredients,
-  };
-};
 
 type IngredientInput = {
   ingredientId: string;
@@ -102,7 +86,9 @@ const assertCanModifyRecipe = async (recipeId: string, userId: string) => {
   }
 };
 
-export const getRecipes = async () => {
+type GetRecipesResult = { success: true; recipes: IRecipe[] } | { success: false; error: string };
+
+export const getRecipes = async (): Promise<GetRecipesResult> => {
   try {
     const userId = await getCurrentUserId();
 
@@ -243,6 +229,28 @@ export const getRecipeById = async (id: string) => {
     if (!dbRecipe) return null;
 
     if (!dbRecipe.isPublic && dbRecipe.authorId && dbRecipe.authorId !== userId) {
+      return null;
+    }
+
+    return mapDbRecipeToRecipe(dbRecipe);
+  } catch {
+    return null;
+  }
+};
+
+export const getRecipeByIdForOwner = async (id: string) => {
+  if (!id) return null;
+
+  try {
+    const userId = await getCurrentUserId();
+    if (!userId) return null;
+
+    const dbRecipe = await prisma.recipe.findUnique({
+      where: { id },
+      include: RECIPE_INCLUDE,
+    });
+
+    if (!dbRecipe || !dbRecipe.authorId || dbRecipe.authorId !== userId) {
       return null;
     }
 
