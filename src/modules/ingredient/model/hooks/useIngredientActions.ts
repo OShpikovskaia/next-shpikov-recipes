@@ -26,7 +26,7 @@ export const useIngredientActions = () => {
 
       if (result.success) {
         setIngredients(result.ingredients);
-        return { success: true };
+        return { success: true, ingredients: result.ingredients };
       }
 
       const message = result.error ?? 'Get ingredients error';
