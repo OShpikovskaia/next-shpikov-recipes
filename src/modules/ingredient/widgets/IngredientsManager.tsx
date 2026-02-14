@@ -10,15 +10,15 @@ import { AUTH_STATUS } from '@/shared/model/auth-status';
 import EmptyState from '@/shared/ui/EmptyState';
 
 import { IngredientEditor } from '../features/IngredientEditor';
+import { useIngredientActions } from '../model/hooks/useIngredientActions';
 import IngredientsTable from '../ui/IngredientsTable';
 
 const IngredientsManager = () => {
   const status = useAuthStore((state) => state.status);
   const isAuth = useAuthStore((state) => state.isAuth);
   const currentUserId = useAuthStore((s) => s.session?.user?.id ?? null);
-
+  const { removeIngredient } = useIngredientActions();
   const ingredients = useIngredientStore((state) => state.ingredients);
-  const removeIngredient = useIngredientStore((state) => state.removeIngredientLocal);
   const isLoading = useIngredientStore((state) => state.isLoading);
   const error = useIngredientStore((state) => state.error);
 

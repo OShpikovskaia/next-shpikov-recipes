@@ -71,7 +71,19 @@ export const getIngredients = async (): Promise<GetIngredientsResult> => {
     if (!userId) return { success: false, error: 'Unauthorized' };
 
     const ingredients = await prisma.ingredient.findMany({
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        normalizedName: true,
+        category: true,
+        unit: true,
+        pricePerUnit: true,
+        description: true,
+        createdAt: true,
+        updatedAt: true,
+        authorId: true,
+      },
     });
 
     return { success: true, ingredients };
@@ -79,18 +91,30 @@ export const getIngredients = async (): Promise<GetIngredientsResult> => {
     return { success: false, error: 'Get ingredients error' };
   }
 };
+
 export const deleteIngredient = async (id: string): Promise<DeleteIngredientResult> => {
   try {
     const userId = await getCurrentUserId();
     if (!userId) return { success: false, error: 'Unauthorized' };
 
-    const { count } = await prisma.ingredient.deleteMany({
+    const ingredient = await prisma.ingredient.findFirst({
       where: { id, authorId: userId },
+      select: { id: true },
     });
 
-    if (count === 0) {
+    if (!ingredient) {
       return { success: false, error: 'Not found or forbidden' };
     }
+
+    const usedCount = await prisma.recipeIngredient.count({
+      where: { ingredientId: id },
+    });
+
+    if (usedCount > 0) {
+      return { success: false, error: 'This ingredient is used in recipes and cannot be deleted.' };
+    }
+
+    await prisma.ingredient.delete({ where: { id } });
 
     return { success: true };
   } catch {
