@@ -52,6 +52,7 @@ const EmptyState: FC<PropsWithChildren<EmptyStateProps>> = ({
         width={isLarge ? 260 : 200}
         height={isLarge ? 200 : 150}
         priority
+        fetchPriority="high"
       />
 
       {!hideText && (

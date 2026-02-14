@@ -49,7 +49,16 @@ interface HeaderProps {
 }
 
 const Logo = () => {
-  return <Image src="/logo.png" priority alt={siteConfig.title} width={26} height={26} />;
+  return (
+    <Image
+      src="/logo.png"
+      priority
+      fetchPriority="high"
+      alt={siteConfig.title}
+      width={26}
+      height={26}
+    />
+  );
 };
 
 const Header = ({
