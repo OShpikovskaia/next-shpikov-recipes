@@ -1,7 +1,7 @@
 'use client';
 
 import type { ChangeEventHandler } from 'react';
-import { Input } from '@heroui/react';
+import { Input } from '@heroui/input';
 import clsx from 'clsx';
 
 type SearchBarProps = {

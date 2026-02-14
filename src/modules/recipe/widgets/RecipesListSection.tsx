@@ -3,7 +3,7 @@
 import type { FC } from 'react';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@heroui/react';
+import { Button } from '@heroui/button';
 
 import { useAuthStore } from '@/modules/auth/model/store';
 import RecipeCard from '@/modules/recipe/ui/RecipeCard';

@@ -1,17 +1,10 @@
 'use client';
 
 import Image from 'next/image';
+import { Button } from '@heroui/button';
 import type { SortDescriptor } from '@heroui/react';
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  Tooltip,
-} from '@heroui/react';
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/table';
+import { Tooltip } from '@heroui/tooltip';
 
 import {
   formatPricePerUnit,

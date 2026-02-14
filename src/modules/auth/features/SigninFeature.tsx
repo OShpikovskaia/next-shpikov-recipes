@@ -1,9 +1,8 @@
 'use client';
 
-import type { FormEvent } from 'react';
-import { useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Form } from '@heroui/react';
+import { Form } from '@heroui/form';
 
 import { signinWithCredentials } from '../model/signin-client';
 import LoginFormFields from '../ui/LoginFormFields';

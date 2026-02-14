@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import type { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
-import { HeroUIProvider } from '@heroui/react';
+import { HeroUIProvider } from '@heroui/system';
 
 interface ProvidersProps {
   children: ReactNode;

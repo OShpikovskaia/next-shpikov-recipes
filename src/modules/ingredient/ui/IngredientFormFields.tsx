@@ -1,6 +1,9 @@
 'use client';
 
-import { Button, Input, Select, type Selection, SelectItem } from '@heroui/react';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
+import { type Selection } from '@heroui/react';
+import { Select, SelectItem } from '@heroui/select';
 
 import type { IngredientsFormData } from '../model/type';
 import { validatePriceInput } from '../model/validation';
