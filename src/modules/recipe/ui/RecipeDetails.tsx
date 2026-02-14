@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Button, Card, CardBody, CardHeader } from '@heroui/react';
+import { Button } from '@heroui/button';
+import { Card, CardBody, CardHeader } from '@heroui/card';
 
 import { formatUnitLabel } from '@/modules/recipe/model/utils/client';
 

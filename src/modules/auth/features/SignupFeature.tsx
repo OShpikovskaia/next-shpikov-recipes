@@ -1,10 +1,9 @@
 'use client';
 
-import type { FormEvent } from 'react';
-import { useState, useTransition } from 'react';
+import { type FormEvent, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { Form } from '@heroui/react';
+import { Form } from '@heroui/form';
 
 import { signupUser } from '@/modules/auth/model/server-actions';
 

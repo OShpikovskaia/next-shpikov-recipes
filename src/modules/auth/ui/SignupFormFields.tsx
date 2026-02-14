@@ -1,4 +1,5 @@
-import { Button, Input } from '@heroui/react';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
 
 interface SignupFormFieldsProps {
   email: string;

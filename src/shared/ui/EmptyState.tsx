@@ -3,7 +3,7 @@
 import type { FC, PropsWithChildren } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '@heroui/react';
+import { Button } from '@heroui/button';
 
 import type { EmptyStateVariant } from '../config/empty-state.config';
 import { EMPTY_STATE_CONFIG } from '../config/empty-state.config';

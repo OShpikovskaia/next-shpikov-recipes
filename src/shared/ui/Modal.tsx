@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Modal, ModalBody, ModalContent, ModalHeader } from '@heroui/react';
+import { Modal, ModalBody, ModalContent, ModalHeader } from '@heroui/modal';
 
 interface CustomModalProps {
   isOpen: boolean;

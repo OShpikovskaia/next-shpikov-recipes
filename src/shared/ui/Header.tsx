@@ -4,8 +4,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Button } from '@heroui/button';
 import {
-  Button,
   Navbar,
   NavbarBrand,
   NavbarContent,
@@ -13,7 +13,7 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
-} from '@heroui/react';
+} from '@heroui/navbar';
 import clsx from 'clsx';
 
 import { layoutConfig } from '@/shared/config/layout.config';

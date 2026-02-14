@@ -1,6 +1,9 @@
 'use client';
 
-import { Button, Input, Select, SelectItem, Switch, Textarea } from '@heroui/react';
+import { Button } from '@heroui/button';
+import { Input, Textarea } from '@heroui/input';
+import { Select, SelectItem } from '@heroui/select';
+import { Switch } from '@heroui/switch';
 
 export interface IngredientField {
   id: string;

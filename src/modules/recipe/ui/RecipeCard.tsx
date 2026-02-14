@@ -2,7 +2,8 @@
 
 import { useTransition } from 'react';
 import Link from 'next/link';
-import { Button, Card } from '@heroui/react';
+import { Button } from '@heroui/button';
+import { Card } from '@heroui/card';
 import clsx from 'clsx';
 
 import { useAuthStore } from '@/modules/auth/model/store';
