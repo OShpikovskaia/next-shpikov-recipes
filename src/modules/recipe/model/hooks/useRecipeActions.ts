@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
 import type { CreateRecipeInput } from '../server-actions';
@@ -15,38 +16,50 @@ interface ActionResult {
 export const useRecipeActions = () => {
   const router = useRouter();
 
-  const addRecipe = async (input: CreateRecipeInput): Promise<ActionResult> => {
-    const result = await createRecipe(input);
+  const addRecipe = useCallback(
+    async (input: CreateRecipeInput): Promise<ActionResult> => {
+      const result = await createRecipe(input);
 
-    if (result.success) {
-      router.refresh();
-      return { success: true, recipe: result.recipe };
-    }
+      if (result.success) {
+        router.refresh();
+        return { success: true, recipe: result.recipe };
+      }
 
-    return { success: false, error: result.error };
-  };
+      return { success: false, error: result.error ?? 'Creating recipe error' };
+    },
+    [router],
+  );
 
-  const editRecipe = async (id: string, input: any): Promise<ActionResult> => {
-    const result = await updateRecipe(id, input);
+  const editRecipe = useCallback(
+    async (id: string, input: CreateRecipeInput): Promise<ActionResult> => {
+      const result = await updateRecipe(id, input);
 
-    if (result.success) {
-      router.refresh();
-      return { success: true, recipe: result.recipe };
-    }
+      if (result.success) {
+        router.refresh();
+        return { success: true, recipe: result.recipe };
+      }
 
-    return { success: false, error: result.error };
-  };
+      return { success: false, error: result.error ?? 'Updating recipe error' };
+    },
+    [router],
+  );
 
-  const removeRecipe = async (id: string): Promise<ActionResult> => {
-    const result = await deleteRecipe(id);
+  const removeRecipe = useCallback(
+    async (id: string): Promise<ActionResult> => {
+      const result = await deleteRecipe(id);
 
-    if (result.success) {
-      router.refresh();
-      return { success: true };
-    }
+      if (result.success) {
+        router.refresh();
+        return { success: true };
+      }
 
-    return { success: false, error: result.error };
-  };
+      return { success: false, error: result.error ?? 'Delete recipe error' };
+    },
+    [router],
+  );
 
-  return { addRecipe, editRecipe, removeRecipe };
+  return useMemo(
+    () => ({ addRecipe, editRecipe, removeRecipe }),
+    [addRecipe, editRecipe, removeRecipe],
+  );
 };
