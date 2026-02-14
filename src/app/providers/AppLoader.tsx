@@ -7,8 +7,6 @@ import { useSession } from 'next-auth/react';
 import { useAuthStore } from '@/modules/auth/model/store';
 import { useIngredientActions } from '@/modules/ingredient/model/hooks/useIngredientActions';
 import { useIngredientStore } from '@/modules/ingredient/model/store';
-import { useRecipeActions } from '@/modules/recipe/model/hooks/useRecipeActions';
-import { useRecipeStore } from '@/modules/recipe/model/store';
 import { AUTH_STATUS } from '@/shared/model/auth-status';
 
 interface AppLoaderProps {
@@ -20,13 +18,9 @@ const AppLoader = ({ children }: AppLoaderProps) => {
 
   const setAuthState = useAuthStore((state) => state.setAuthState);
 
-  const resetRecipes = useRecipeStore((state) => state.reset);
   const resetIngredients = useIngredientStore((state) => state.reset);
-
-  const recipes = useRecipeStore((state) => state.recipes);
   const ingredients = useIngredientStore((state) => state.ingredients);
 
-  const { loadRecipes } = useRecipeActions();
   const { loadIngredients } = useIngredientActions();
 
   useEffect(() => {
@@ -37,7 +31,6 @@ const AppLoader = ({ children }: AppLoaderProps) => {
     if (status === AUTH_STATUS.LOADING) return;
 
     if (status === AUTH_STATUS.UNAUTHENTICATED) {
-      resetRecipes();
       resetIngredients();
       return;
     }
@@ -46,18 +39,8 @@ const AppLoader = ({ children }: AppLoaderProps) => {
       if (!session?.user?.id) return;
 
       if (ingredients === null) void loadIngredients();
-      if (recipes === null) void loadRecipes();
     }
-  }, [
-    status,
-    session?.user?.id,
-    ingredients,
-    recipes,
-    loadIngredients,
-    loadRecipes,
-    resetIngredients,
-    resetRecipes,
-  ]);
+  }, [status, session?.user?.id, ingredients, loadIngredients, resetIngredients]);
 
   return <>{children}</>;
 };

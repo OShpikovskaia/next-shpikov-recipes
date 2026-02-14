@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Form } from '@heroui/react';
 
 import { useIngredientStore } from '@/modules/ingredient/model/store';
 import type { IRecipe } from '@/modules/recipe/model/types';
@@ -13,6 +12,7 @@ import {
 } from '@/modules/recipe/ui/RecipeFormFields';
 
 import { useRecipeActions } from '../model/hooks/useRecipeActions';
+import type { CreateRecipeInput } from '../model/server-actions';
 
 interface RecipeEditorProps {
   initialRecipe?: IRecipe;
@@ -88,16 +88,34 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
     }));
   };
 
-  const handleSubmit = async (formDataNative: FormData) => {
+  const buildInput = (): CreateRecipeInput => ({
+    name: formData.name,
+    description: formData.description,
+    steps: formData.steps,
+    imageUrl: formData.imageUrl.trim() ? formData.imageUrl.trim() : null,
+    isPublic: formData.isPublic,
+    ingredients: ingredientFields
+      .filter((f) => f.ingredientId && f.quantity !== null)
+      .map((f) => ({
+        ingredientId: f.ingredientId,
+        quantity: f.quantity as number,
+      })),
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     startTransition(async () => {
       setError(null);
 
+      const input = buildInput();
       const result = initialRecipe
-        ? await updateRecipe(initialRecipe.id, formDataNative)
-        : await addRecipe(formDataNative);
+        ? await updateRecipe(initialRecipe.id, input)
+        : await addRecipe(input);
 
       if (result.success) {
         setFormData(initialState);
+        setIngredientFields([makeField()]);
         router.push('/');
       } else {
         setError(result.error || 'Error saving recipe');
@@ -110,7 +128,7 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
   const ingredientsOptions = ingredients || [];
 
   return (
-    <Form action={handleSubmit} className="mx-auto flex w-full max-w-xl flex-col gap-6">
+    <form onSubmit={handleSubmit} className="mx-auto flex w-full max-w-xl flex-col gap-6">
       <RecipeFormFields
         error={error}
         formData={formData}
@@ -125,7 +143,7 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
         isEditMode={isEditMode}
         isPending={isPending}
       />
-    </Form>
+    </form>
   );
 };
 

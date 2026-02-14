@@ -1,9 +1,9 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 
-import { createRecipe, deleteRecipe, getRecipes, updateRecipe } from '../server-actions';
-import { useRecipeStore } from '../store';
+import type { CreateRecipeInput } from '../server-actions';
+import { createRecipe, deleteRecipe, updateRecipe } from '../server-actions';
 import type { IRecipe } from '../types';
 
 interface ActionResult {
@@ -13,80 +13,40 @@ interface ActionResult {
 }
 
 export const useRecipeActions = () => {
-  const setLoading = useRecipeStore((state) => state.setLoading);
-  const setError = useRecipeStore((state) => state.setError);
-  const setRecipes = useRecipeStore((state) => state.setRecipes);
-  const upsertRecipe = useRecipeStore((state) => state.upsertRecipe);
-  const removeRecipeLocal = useRecipeStore((state) => state.removeRecipeLocal);
+  const router = useRouter();
 
-  const loadRecipes = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const addRecipe = async (input: CreateRecipeInput): Promise<ActionResult> => {
+    const result = await createRecipe(input);
 
-    const result = await getRecipes();
     if (result.success) {
-      setRecipes(result.recipes);
-    } else {
-      setRecipes([]);
-      setError(result.error ?? 'Failed to load recipes');
+      router.refresh();
+      return { success: true, recipe: result.recipe };
     }
 
-    setLoading(false);
-  }, [setLoading, setError, setRecipes]);
+    return { success: false, error: result.error };
+  };
 
-  const addRecipe = useCallback(
-    async (formData: FormData): Promise<ActionResult> => {
-      setError(null);
-      const result = await createRecipe(formData);
+  const editRecipe = async (id: string, input: any): Promise<ActionResult> => {
+    const result = await updateRecipe(id, input);
 
-      if (result.success && result.recipe) {
-        upsertRecipe(result.recipe);
-        return { success: true, recipe: result.recipe };
-      }
+    if (result.success) {
+      router.refresh();
+      return { success: true, recipe: result.recipe };
+    }
 
-      const message = result.error ?? 'Creating recipe error';
-      setError(message);
-      return { success: false, error: message };
-    },
-    [setError, upsertRecipe],
-  );
+    return { success: false, error: result.error };
+  };
 
-  const editRecipe = useCallback(
-    async (id: string, formData: FormData): Promise<ActionResult> => {
-      setError(null);
-      const result = await updateRecipe(id, formData);
+  const removeRecipe = async (id: string): Promise<ActionResult> => {
+    const result = await deleteRecipe(id);
 
-      if (result.success && result.recipe) {
-        upsertRecipe(result.recipe);
-        return { success: true, recipe: result.recipe };
-      }
+    if (result.success) {
+      router.refresh();
+      return { success: true };
+    }
 
-      const message = result.error ?? 'Updating recipe error';
-      setError(message);
-      return { success: false, error: message };
-    },
-    [setError, upsertRecipe],
-  );
+    return { success: false, error: result.error };
+  };
 
-  const removeRecipe = useCallback(
-    async (id: string): Promise<ActionResult> => {
-      setError(null);
-      const result = await deleteRecipe(id);
-
-      if (result.success) {
-        removeRecipeLocal(id);
-        return { success: true };
-      }
-
-      const message = result.error ?? 'Delete recipe error';
-      setError(message);
-      return { success: false, error: message };
-    },
-    [setError, removeRecipeLocal],
-  );
-
-  return useMemo(
-    () => ({ loadRecipes, addRecipe, editRecipe, removeRecipe }),
-    [loadRecipes, addRecipe, editRecipe, removeRecipe],
-  );
+  return { addRecipe, editRecipe, removeRecipe };
 };
