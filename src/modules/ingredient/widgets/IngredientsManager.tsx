@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import type { SortDescriptor } from '@heroui/react';
 
 import { useAuthStore } from '@/modules/auth/model/store';
@@ -9,9 +10,25 @@ import { getFilteredAndSortedIngredients } from '@/modules/ingredient/model/util
 import { AUTH_STATUS } from '@/shared/model/auth-status';
 import EmptyState from '@/shared/ui/EmptyState';
 
-import { IngredientEditor } from '../features/IngredientEditor';
 import { useIngredientActions } from '../model/hooks/useIngredientActions';
-import IngredientsTable from '../ui/IngredientsTable';
+
+const IngredientsTable = dynamic(() => import('../ui/IngredientsTable'), {
+  ssr: false,
+  loading: () => (
+    <div className="mt-4 flex w-full justify-center">
+      <p className="text-default-500 text-sm">Loading table…</p>
+    </div>
+  ),
+});
+
+const IngredientEditor = dynamic(() => import('../features/IngredientEditor'), {
+  ssr: false,
+  loading: () => (
+    <div className="mt-4">
+      <p className="text-default-500 text-sm">Loading editor…</p>
+    </div>
+  ),
+});
 
 const IngredientsManager = () => {
   const status = useAuthStore((state) => state.status);

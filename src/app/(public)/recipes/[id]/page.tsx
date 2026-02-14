@@ -8,9 +8,9 @@ import RecipeDetails from '@/modules/recipe/ui/RecipeDetails';
 import { PrivateRecipeGate } from '@/modules/recipe/widgets/PrivateRecipeGate';
 import { siteConfig } from '@/shared/config/site.config';
 
-interface PageProps {
-  params: { id: string };
-}
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
 
 export const revalidate = 60;
 

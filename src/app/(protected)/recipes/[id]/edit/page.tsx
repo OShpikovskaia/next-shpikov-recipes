@@ -1,8 +1,8 @@
 import { RecipeEditSection } from '@/modules/recipe/widgets/RecipeEditSection';
 
-interface PageProps {
-  params: { id: string };
-}
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
 
 export default async function EditRecipePage({ params }: PageProps) {
   const { id } = await params;
