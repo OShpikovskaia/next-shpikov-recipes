@@ -57,6 +57,8 @@ export const RecipeFormFields = ({
   isEditMode,
   isPending,
 }: RecipeFormFieldsProps) => {
+  const optionIds = new Set((ingredientsOptions || []).map((i) => i.id));
+
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
       {error && <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
@@ -154,14 +156,21 @@ export const RecipeFormFields = ({
                     name={`ingredient_${index}`}
                     label="Ingredient"
                     placeholder="Select an ingredient"
-                    selectedKeys={field.ingredientId ? [field.ingredientId] : []}
+                    selectedKeys={
+                      field.ingredientId && optionIds.has(field.ingredientId)
+                        ? new Set([field.ingredientId])
+                        : new Set<string>()
+                    }
                     classNames={{
                       trigger: 'bg-default-100 w-full',
                       innerWrapper: 'text-sm',
                       value: 'truncate',
                       selectorIcon: 'text-black',
                     }}
-                    onChange={(e) => onIngredientChange(field.id, 'ingredientId', e.target.value)}
+                    onSelectionChange={(keys) => {
+                      const selected = Array.from(keys)[0] as string | undefined;
+                      onIngredientChange(field.id, 'ingredientId', selected ?? '');
+                    }}
                   >
                     {(ingredientsOptions || []).map((ingredient) => (
                       <SelectItem key={ingredient.id} className="text-black">
