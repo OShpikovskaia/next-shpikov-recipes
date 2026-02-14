@@ -25,7 +25,7 @@ const selectionToValue = (keys: Selection): string => {
   return first?.toString() ?? '';
 };
 
-export const IngredientEditor = () => {
+const IngredientEditor = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [formData, setFormData] = useState<IngredientsFormData>(INITIAL_STATE);
 
@@ -77,3 +77,5 @@ export const IngredientEditor = () => {
     </Form>
   );
 };
+
+export default IngredientEditor;
