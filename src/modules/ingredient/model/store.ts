@@ -13,7 +13,8 @@ interface IngredientState {
   setError: (value: string | null) => void;
   setIngredients: (value: IIngredient[]) => void;
   appendIngredient: (value: IIngredient) => void;
-  removeIngredientLocal: (id: string) => void;
+  // don't use from UI
+  _removeIngredientLocal: (id: string) => void;
 }
 
 export const useIngredientStore = create<IngredientState>((set) => ({
@@ -30,7 +31,8 @@ export const useIngredientStore = create<IngredientState>((set) => ({
     set((state) => ({
       ingredients: state.ingredients ? [...state.ingredients, value] : [value],
     })),
-  removeIngredientLocal: (id) =>
+  // don't use from UI
+  _removeIngredientLocal: (id) =>
     set((state) => ({
       ingredients: (state.ingredients ?? []).filter((i) => i.id !== id),
     })),

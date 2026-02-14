@@ -17,7 +17,9 @@ const IngredientsManager = () => {
   const status = useAuthStore((state) => state.status);
   const isAuth = useAuthStore((state) => state.isAuth);
   const currentUserId = useAuthStore((s) => s.session?.user?.id ?? null);
+
   const { removeIngredient } = useIngredientActions();
+
   const ingredients = useIngredientStore((state) => state.ingredients);
   const isLoading = useIngredientStore((state) => state.isLoading);
   const error = useIngredientStore((state) => state.error);

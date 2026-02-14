@@ -15,33 +15,6 @@ export const useIngredientActions = () => {
   const setError = useIngredientStore((state) => state.setError);
   const setIngredients = useIngredientStore((state) => state.setIngredients);
   const appendIngredient = useIngredientStore((state) => state.appendIngredient);
-  const removeIngredientLocal = useIngredientStore((state) => state.removeIngredientLocal);
-
-  const loadIngredients = useCallback(async (): Promise<LoadResult> => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await getIngredients();
-
-      if (result.success) {
-        setIngredients(result.ingredients);
-        return { success: true, ingredients: result.ingredients };
-      }
-
-      const message = result.error ?? 'Get ingredients error';
-      setIngredients([]);
-      setError(message);
-      return { success: false, error: message };
-    } catch {
-      const message = 'Get ingredients error';
-      setIngredients([]);
-      setError(message);
-      return { success: false, error: message };
-    } finally {
-      setLoading(false);
-    }
-  }, [setLoading, setError, setIngredients]);
 
   const addIngredient = useCallback(
     async (formData: IngredientsFormData): Promise<AddResult> => {
@@ -67,28 +40,51 @@ export const useIngredientActions = () => {
     [setError, appendIngredient],
   );
 
+  const loadIngredients = useCallback(async (): Promise<LoadResult> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await getIngredients();
+
+      if (result.success) {
+        setIngredients(result.ingredients);
+        return { success: true, ingredients: result.ingredients };
+      }
+
+      const message = result.error ?? 'Get ingredients error';
+      setIngredients([]);
+      setError(message);
+      return { success: false, error: message };
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, setError, setIngredients]);
+
   const removeIngredient = useCallback(
     async (id: string): Promise<RemoveResult> => {
       setError(null);
 
+      const prev = useIngredientStore.getState().ingredients;
+      useIngredientStore.getState()._removeIngredientLocal(id);
+
       try {
         const result = await deleteIngredient(id);
 
-        if (result.success) {
-          removeIngredientLocal(id);
-          return { success: true };
-        }
+        if (result.success) return { success: true };
 
+        if (prev) setIngredients(prev);
         const message = result.error ?? 'Delete ingredient error';
         setError(message);
         return { success: false, error: message };
       } catch {
+        if (prev) setIngredients(prev);
         const message = 'Delete ingredient error';
         setError(message);
         return { success: false, error: message };
       }
     },
-    [setError, removeIngredientLocal],
+    [setError, setIngredients],
   );
 
   return useMemo(
