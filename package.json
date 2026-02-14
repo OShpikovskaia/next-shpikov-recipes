@@ -12,8 +12,7 @@
     "type-check": "tsc --noEmit",
     "check": "yarn lint && yarn type-check",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "postinstall": "prisma generate && prisma migrate deploy"
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",

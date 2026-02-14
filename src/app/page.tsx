@@ -1,9 +1,11 @@
-'use client';
-
+import { getRecipes } from '@/modules/recipe/model/server-actions';
 import RecipesListSection from '@/modules/recipe/widgets/RecipesListSection';
 
-const Home = () => {
-  return <RecipesListSection />;
-};
+export const revalidate = 60;
 
-export default Home;
+export default async function Home() {
+  const result = await getRecipes();
+  const recipes = result.success ? result.recipes : [];
+
+  return <RecipesListSection initialRecipes={recipes} />;
+}

@@ -58,8 +58,10 @@ CREATE TABLE "ingredients" (
     "unit" "Unit" NOT NULL,
     "pricePerUnit" DOUBLE PRECISION,
     "description" TEXT,
+    "normalized_name" TEXT NOT NULL,
     "create_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "update_at" TIMESTAMP(3) NOT NULL,
+    "author_id" TEXT,
 
     CONSTRAINT "ingredients_pkey" PRIMARY KEY ("id")
 );
@@ -73,6 +75,8 @@ CREATE TABLE "recipes" (
     "image_url" TEXT,
     "isPublic" BOOLEAN NOT NULL DEFAULT true,
     "author_id" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "recipes_pkey" PRIMARY KEY ("id")
 );
@@ -99,11 +103,20 @@ CREATE UNIQUE INDEX "sessions_session_token_key" ON "sessions"("session_token");
 -- CreateIndex
 CREATE UNIQUE INDEX "verification_tokens_identifier_token_key" ON "verification_tokens"("identifier", "token");
 
+-- CreateIndex
+CREATE INDEX "ingredients_author_id_idx" ON "ingredients"("author_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ingredients_normalized_name_key" ON "ingredients"("normalized_name");
+
 -- AddForeignKey
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ingredients" ADD CONSTRAINT "ingredients_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "recipes" ADD CONSTRAINT "recipes_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

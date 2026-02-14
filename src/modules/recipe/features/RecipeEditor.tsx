@@ -2,19 +2,22 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Form } from '@heroui/react';
 
-import { useIngredientStore } from '@/modules/ingredient/model/store';
-import { useRecipeStore } from '@/modules/recipe/model/store';
-import type { IRecipe } from '@/modules/recipe/model/type';
+import type { IRecipe } from '@/modules/recipe/model/types';
 import {
   type IngredientField,
   type RecipeFormData,
   RecipeFormFields,
 } from '@/modules/recipe/ui/RecipeFormFields';
 
+import { useRecipeActions } from '../model/hooks/useRecipeActions';
+import type { CreateRecipeInput } from '../model/server-actions';
+
+type IngredientOption = { id: string; name: string };
+
 interface RecipeEditorProps {
   initialRecipe?: IRecipe;
+  ingredientsOptions: IngredientOption[];
 }
 
 const MAX_INGREDIENTS = 10;
@@ -34,7 +37,7 @@ const makeField = (overrides?: Partial<IngredientField>): IngredientField => ({
   ...overrides,
 });
 
-const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
+const RecipeEditor = ({ initialRecipe, ingredientsOptions }: RecipeEditorProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<RecipeFormData>({
@@ -46,18 +49,14 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
   });
 
   const [ingredientFields, setIngredientFields] = useState<IngredientField[]>(
-    initialRecipe?.ingredients && initialRecipe.ingredients.length > 0
+    initialRecipe?.ingredients?.length
       ? initialRecipe.ingredients.map((ing) =>
-          makeField({
-            ingredientId: ing.ingredientId,
-            quantity: ing.quantity,
-          }),
+          makeField({ ingredientId: ing.ingredientId, quantity: ing.quantity }),
         )
       : [makeField()],
   );
 
-  const { ingredients } = useIngredientStore();
-  const { addRecipe, updateRecipe } = useRecipeStore();
+  const { addRecipe, editRecipe: updateRecipe } = useRecipeActions();
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -81,22 +80,34 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
     field: K,
     value: RecipeFormData[K],
   ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (formDataNative: FormData) => {
+  const buildInput = (): CreateRecipeInput => ({
+    name: formData.name,
+    description: formData.description,
+    steps: formData.steps,
+    imageUrl: formData.imageUrl.trim() ? formData.imageUrl.trim() : null,
+    isPublic: formData.isPublic,
+    ingredients: ingredientFields
+      .filter((f) => f.ingredientId && f.quantity !== null)
+      .map((f) => ({ ingredientId: f.ingredientId, quantity: f.quantity as number })),
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     startTransition(async () => {
       setError(null);
 
+      const input = buildInput();
       const result = initialRecipe
-        ? await updateRecipe(initialRecipe.id, formDataNative)
-        : await addRecipe(formDataNative);
+        ? await updateRecipe(initialRecipe.id, input)
+        : await addRecipe(input);
 
       if (result.success) {
         setFormData(initialState);
+        setIngredientFields([makeField()]);
         router.push('/');
       } else {
         setError(result.error || 'Error saving recipe');
@@ -104,12 +115,8 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
     });
   };
 
-  const isEditMode = Boolean(initialRecipe);
-  const canAddIngredient = ingredientFields.length < MAX_INGREDIENTS;
-  const ingredientsOptions = ingredients || [];
-
   return (
-    <Form action={handleSubmit} className="mx-auto flex w-full max-w-xl flex-col gap-6">
+    <form onSubmit={handleSubmit} className="mx-auto flex w-full max-w-xl flex-col gap-6">
       <RecipeFormFields
         error={error}
         formData={formData}
@@ -117,14 +124,14 @@ const RecipeEditor = ({ initialRecipe }: RecipeEditorProps) => {
         ingredientFields={ingredientFields}
         ingredientsOptions={ingredientsOptions}
         maxIngredients={MAX_INGREDIENTS}
-        canAddIngredient={canAddIngredient}
+        canAddIngredient={ingredientFields.length < MAX_INGREDIENTS}
         onAddIngredientField={handleAddIngredientField}
         onRemoveIngredientField={handleRemoveIngredientField}
         onIngredientChange={handleIngredientChange}
-        isEditMode={isEditMode}
+        isEditMode={Boolean(initialRecipe)}
         isPending={isPending}
       />
-    </Form>
+    </form>
   );
 };
 
