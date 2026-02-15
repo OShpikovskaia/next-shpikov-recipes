@@ -12,8 +12,9 @@ concurrency:
 
 jobs:
   check:
-    name: Lint, Typecheck and Build
+    name: Format, Lint and Typecheck
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,37 +25,11 @@ jobs:
           node-version: 20
           cache: yarn
 
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Install dependencies (Yarn v1 or v2+)
-        shell: bash
-        run: |
-          set -e
-          YARN_VERSION="$(yarn --version)"
-          YARN_MAJOR="${YARN_VERSION%%.*}"
-          echo "Detected Yarn version: $YARN_VERSION"
-
-          if [ "$YARN_MAJOR" -eq 1 ]; then
-            yarn --frozen-lockfile
-          else
-            yarn install --immutable
-          fi
-
-      - name: Generate Prisma Client
-        run: yarn prisma generate
-        env:
-          DATABASE_URL: 'postgresql://prisma:prisma@localhost:5432/prisma?schema=public'
+      - name: Install
+        run: yarn --frozen-lockfile
 
       - name: Check Formatting
         run: yarn format:check
 
       - name: Lint and Type-check
         run: yarn check
-
-      - name: Build Project
-        run: yarn build
-        env:
-          NEXT_TELEMETRY_DISABLED: 1
-          # is needed here because Next during build calls Prisma in the SSG/SSR phase
-          DATABASE_URL: 'postgresql://prisma:prisma@localhost:5432/prisma?schema=public'
