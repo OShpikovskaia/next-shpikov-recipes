@@ -1,0 +1,9 @@
+next-env.d.ts
+.next/
+out/
+build/
+
+node_modules/
+
+*.log
+.env*

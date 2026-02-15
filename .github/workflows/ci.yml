@@ -6,9 +6,15 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
+    name: Format, Lint and Typecheck
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,5 +28,8 @@ jobs:
       - name: Install
         run: yarn --frozen-lockfile
 
-      - name: Check
+      - name: Check Formatting
+        run: yarn format:check
+
+      - name: Lint and Type-check
         run: yarn check
