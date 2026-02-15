@@ -131,7 +131,7 @@ export const RecipeFormFields = ({
           onChange={(e) => handleImageUrlChange(e.target.value)}
         />
         <p className="mt-1 text-xs text-gray-500">
-          Find an image on Unsplash and paste the{' '}
+          Find an image on Pexels and paste the{' '}
           <span className="font-medium">direct image URL</span> (should start with{' '}
           <span className="font-mono">https://www.pexels.com/search</span>
           ).{' '}
