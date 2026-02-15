@@ -126,47 +126,47 @@ This repo uses Yarn classic.
 
 ```bash
 yarn
-2) Configure environment variables
+```
+
+2. Configure environment variables
 
 Create .env:
 
 # PostgreSQL connection string
+
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/shpikov_recipes?schema=public"
 
 # NextAuth secret (required)
-AUTH_SECRET="YOUR_LONG_RANDOM_SECRET"
 
+AUTH_SECRET="YOUR_LONG_RANDOM_SECRET"
 
 Note: Prisma config reads DATABASE_URL and migrations live in prisma/migrations.
 
-3) Prisma: migrate + generate
-yarn prisma generate
-yarn prisma migrate dev
+3. Prisma: migrate + generate
+   yarn prisma generate
+   yarn prisma migrate dev
 
-4) Run the dev server
-yarn dev
-
+4. Run the dev server
+   yarn dev
 
 Open http://localhost:3000
 
 Useful scripts
-yarn dev           # start dev server
-yarn build         # production build
-yarn start         # run production server
-yarn lint          # eslint
-yarn fix           # eslint --fix
-yarn type-check    # tsc --noEmit
-yarn check         # lint + type-check
-yarn format        # prettier --write
-yarn format:check  # prettier --check
-
+yarn dev # start dev server
+yarn build # production build
+yarn start # run production server
+yarn lint # eslint
+yarn fix # eslint --fix
+yarn type-check # tsc --noEmit
+yarn check # lint + type-check
+yarn format # prettier --write
+yarn format:check # prettier --check
 
 Bundle analyzer (optional)
 
 This repo supports Next.js bundle analyzer via:
 
 ANALYZE=true yarn build
-
 
 Notes / known limitations
 
@@ -179,4 +179,7 @@ Remote images are allowed from any hostname (see next.config.ts remotePatterns).
 License
 
 MIT (or your choice). Add a LICENSE file if you want an explicit license.
+
+```
+
 ```
