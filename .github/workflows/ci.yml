@@ -6,8 +6,13 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
+    name: Lint, Typecheck and Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,10 +22,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: yarn
+          cache: 'yarn'
 
       - name: Install
         run: yarn --frozen-lockfile
 
-      - name: Check
+      - name: Check Formatting
+        run: yarn format:check
+
+      - name: Lint and Type-check
         run: yarn check
+
+      - name: Build Project
+        run: yarn build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
