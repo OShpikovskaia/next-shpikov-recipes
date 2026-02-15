@@ -68,14 +68,9 @@ export const RecipeFormFields = ({
 
   const handleImageUrlChange = (raw: string) => {
     onChangeFormField('imageUrl', raw);
-    setImageUrlError(getImageUrlError(raw));
+    setImageUrlError(getImageUrlError(raw.trim()));
   };
 
-  const handleImageUrlBlur = () => {
-    const trimmed = formData.imageUrl.trim();
-    onChangeFormField('imageUrl', trimmed);
-    setImageUrlError(getImageUrlError(trimmed));
-  };
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
       {error && <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
@@ -134,7 +129,6 @@ export const RecipeFormFields = ({
             input: 'text-sm focus:outline-none',
           }}
           onChange={(e) => handleImageUrlChange(e.target.value)}
-          onBlur={handleImageUrlBlur}
         />
         <p className="mt-1 text-xs text-gray-500">
           Find an image on Unsplash and paste the{' '}
