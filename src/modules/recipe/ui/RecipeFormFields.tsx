@@ -1,9 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@heroui/button';
 import { Input, Textarea } from '@heroui/input';
 import { Select, SelectItem } from '@heroui/select';
 import { Switch } from '@heroui/switch';
+
+import { getImageUrlError } from '../model/validators/getImageUrlError';
 
 export interface IngredientField {
   id: string;
@@ -61,7 +64,18 @@ export const RecipeFormFields = ({
   isPending,
 }: RecipeFormFieldsProps) => {
   const optionIds = new Set((ingredientsOptions || []).map((i) => i.id));
+  const [imageUrlError, setImageUrlError] = useState<string | null>(null);
 
+  const handleImageUrlChange = (raw: string) => {
+    onChangeFormField('imageUrl', raw);
+    setImageUrlError(getImageUrlError(raw));
+  };
+
+  const handleImageUrlBlur = () => {
+    const trimmed = formData.imageUrl.trim();
+    onChangeFormField('imageUrl', trimmed);
+    setImageUrlError(getImageUrlError(trimmed));
+  };
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
       {error && <p className="rounded-md bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>}
@@ -113,12 +127,30 @@ export const RecipeFormFields = ({
           label="Image URL"
           placeholder="URL of image (optional)"
           value={formData.imageUrl}
+          isInvalid={Boolean(imageUrlError)}
+          errorMessage={imageUrlError ?? undefined}
           classNames={{
             inputWrapper: 'bg-default-100',
             input: 'text-sm focus:outline-none',
           }}
-          onChange={(e) => onChangeFormField('imageUrl', e.target.value)}
+          onChange={(e) => handleImageUrlChange(e.target.value)}
+          onBlur={handleImageUrlBlur}
         />
+        <p className="mt-1 text-xs text-gray-500">
+          Find an image on Unsplash and paste the{' '}
+          <span className="font-medium">direct image URL</span> (should start with{' '}
+          <span className="font-mono">https://www.pexels.com/search</span>
+          ).{' '}
+          <a
+            href="https://www.pexels.com/search"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            Open Pexels
+          </a>
+        </p>
+
         <Switch
           isSelected={formData.isPublic}
           name="isPublic"

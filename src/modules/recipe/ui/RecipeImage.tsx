@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 
 interface RecipeImageProps {
@@ -8,16 +9,21 @@ interface RecipeImageProps {
 }
 
 const RecipeImage = ({ src, alt }: RecipeImageProps) => {
+  const [failed, setFailed] = useState(false);
+
+  const showRemote = Boolean(src?.trim()) && !failed;
+
   return (
     <div className="relative aspect-4/3 w-full overflow-hidden bg-[#EFF6FF]">
-      {src ? (
+      {showRemote ? (
         <Image
-          src={src}
+          src={src!.trim()}
           alt={alt}
           fill
           className="object-cover"
           sizes="(min-width: 1024px) 320px, 100vw"
           priority
+          onError={() => setFailed(true)}
         />
       ) : (
         <Image
