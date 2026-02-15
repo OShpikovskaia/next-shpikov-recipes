@@ -46,14 +46,7 @@ const EmptyState: FC<PropsWithChildren<EmptyStateProps>> = ({
         isLarge ? 'gap-4 py-16' : 'gap-3 py-8'
       }`}
     >
-      <Image
-        src={imageSrc}
-        alt={alt}
-        width={isLarge ? 260 : 200}
-        height={isLarge ? 200 : 150}
-        priority
-        fetchPriority="high"
-      />
+      <Image src={imageSrc} alt={alt} width={isLarge ? 260 : 200} height={isLarge ? 200 : 150} />
 
       {!hideText && (
         <>

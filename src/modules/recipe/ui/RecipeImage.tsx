@@ -17,7 +17,7 @@ const RecipeImage = ({ src, alt }: RecipeImageProps) => {
           fill
           className="object-cover"
           sizes="(min-width: 1024px) 320px, 100vw"
-          fetchPriority="high"
+          priority
         />
       ) : (
         <Image
@@ -26,7 +26,8 @@ const RecipeImage = ({ src, alt }: RecipeImageProps) => {
           fill
           className="object-contain"
           sizes="(min-width: 1024px) 320px, 100vw"
-          fetchPriority="high"
+          priority={false}
+          loading="lazy"
         />
       )}
     </div>
