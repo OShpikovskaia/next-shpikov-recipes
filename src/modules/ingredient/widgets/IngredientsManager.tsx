@@ -3,7 +3,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import type { SortDescriptor } from '@heroui/react';
-import { Skeleton } from '@heroui/react';
 
 import { useAuthStore } from '@/modules/auth/model/store';
 import { useIngredientStore } from '@/modules/ingredient/model/store';
@@ -11,7 +10,10 @@ import { getFilteredAndSortedIngredients } from '@/modules/ingredient/model/util
 import { AUTH_STATUS } from '@/shared/model/auth-status';
 import EmptyState from '@/shared/ui/EmptyState';
 
+import IngredientEditorSkeleton from '../features/IngredientEditor.skeleton';
 import { useIngredientActions } from '../model/hooks/useIngredientActions';
+import IngredientsTableSkeleton from '../ui/IngredientsTable.skeleton';
+import IngredientsPageSkeleton from './IngredientsPage.skeleton';
 
 const IngredientsTable = dynamic(() => import('../ui/IngredientsTable'), {
   ssr: false,
@@ -22,77 +24,6 @@ const IngredientEditor = dynamic(() => import('../features/IngredientEditor'), {
   ssr: false,
   loading: () => <IngredientEditorSkeleton />,
 });
-
-function IngredientEditorSkeleton() {
-  return (
-    <div className="mx-auto w-full max-w-xl pb-16">
-      <div className="flex w-full flex-col gap-6">
-        {/* Name */}
-        <Skeleton className="h-10 w-full rounded-2xl" />
-
-        {/* Row: Category / Unit / Price */}
-        <div className="flex w-full flex-col items-start gap-2 md:flex-row">
-          <Skeleton className="h-10 w-full rounded-2xl" />
-          <Skeleton className="h-10 w-full rounded-2xl" />
-          <Skeleton className="h-10 w-full rounded-2xl" />
-        </div>
-
-        {/* Description */}
-        <Skeleton className="h-10 w-full rounded-2xl" />
-
-        {/* Submit */}
-        <div className="flex w-full">
-          <Skeleton className="h-10 w-full rounded-2xl" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function IngredientsTableSkeleton() {
-  return (
-    <div className="mt-6 w-full">
-      {/* table card */}
-      <div className="border-default-200 mt-4 rounded-2xl border bg-white">
-        <div className="border-default-200 border-b p-4">
-          <Skeleton className="h-4 w-48 rounded-lg" />
-        </div>
-
-        <div className="p-4">
-          <div className="space-y-3">
-            <Skeleton className="h-12 w-full rounded-xl" />
-            <Skeleton className="h-12 w-full rounded-xl" />
-            <Skeleton className="h-12 w-full rounded-xl" />
-            <Skeleton className="h-12 w-full rounded-xl" />
-            <Skeleton className="h-12 w-full rounded-xl" />
-          </div>
-        </div>
-
-        <div className="border-default-200 border-t p-4">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-4 w-32 rounded-lg" />
-            <div className="flex gap-2">
-              <Skeleton className="h-9 w-24 rounded-xl" />
-              <Skeleton className="h-9 w-24 rounded-xl" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function IngredientsPageSkeleton() {
-  return (
-    <div className="w-full">
-      {/* we assume title is on the page already, so skeleton for content only */}
-      <div className="space-y-6">
-        <IngredientEditorSkeleton />
-        <IngredientsTableSkeleton />
-      </div>
-    </div>
-  );
-}
 
 const IngredientsManager = () => {
   // auth

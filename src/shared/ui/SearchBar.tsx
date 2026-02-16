@@ -4,14 +4,14 @@ import type { ChangeEventHandler } from 'react';
 import { Input } from '@heroui/input';
 import clsx from 'clsx';
 
-type SearchBarProps = {
+interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   'aria-label'?: string;
-};
+}
 
 export const SearchBar = ({
   value,

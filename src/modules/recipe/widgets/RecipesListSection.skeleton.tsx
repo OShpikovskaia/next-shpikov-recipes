@@ -1,10 +1,11 @@
 import type { FC } from 'react';
 import { Skeleton } from '@heroui/skeleton';
 
-import ListCountInfoSkeleton from './ListCountInfoSkeleton';
-import RecipeCardSkeleton from './RecipeCardSkeleton';
-import RecipeFilterTabsSkeleton from './RecipeFilterTabsSkeleton';
-import SearchBarSkeleton from './SearchBarSkeleton';
+import ListCountInfoSkeleton from '@/shared/ui/ListCountInfo.skeleton';
+import SearchBarSkeleton from '@/shared/ui/SearchBar.skeleton';
+
+import RecipeCardSkeleton from '../ui/RecipeCard.skeleton';
+import RecipeFilterTabsSkeleton from '../ui/RecipeFilterTabs.skeleton';
 
 interface RecipesListSectionSkeletonProps {
   isAuth?: boolean;
