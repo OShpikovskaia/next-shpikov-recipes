@@ -19,7 +19,6 @@ import DeleteIngredientButton from './DeleteIngredientButton';
 interface IngredientsTableProps {
   rows: IIngredient[];
   totalCount: number;
-  isLoading: boolean;
   error: string | null;
   searchValue: string;
   onSearchChange: (value: string) => void;
@@ -32,7 +31,6 @@ interface IngredientsTableProps {
 const IngredientsTable = ({
   rows,
   totalCount,
-  isLoading,
   error,
   searchValue,
   onSearchChange,
@@ -165,10 +163,6 @@ const IngredientsTable = ({
           })}
         </TableBody>
       </Table>
-
-      {isLoading && hasAnyIngredients && (
-        <p className="text-default-400 text-xs">Updating ingredients…</p>
-      )}
     </div>
   );
 };

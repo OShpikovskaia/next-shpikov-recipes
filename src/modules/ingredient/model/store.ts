@@ -2,38 +2,36 @@ import { create } from 'zustand';
 
 import type { IIngredient } from './type';
 
+type LoadStatus = 'idle' | 'loading' | 'success' | 'error';
+
 interface IngredientState {
-  ingredients: IIngredient[] | null;
-  isLoading: boolean;
+  ingredients: IIngredient[];
+  status: LoadStatus;
   error: string | null;
 
   reset: () => void;
 
-  setLoading: (value: boolean) => void;
-  setError: (value: string | null) => void;
-  setIngredients: (value: IIngredient[]) => void;
+  startLoading: () => void;
+  setLoaded: (value: IIngredient[]) => void;
+  setFailed: (message: string) => void;
+
   appendIngredient: (value: IIngredient) => void;
-  // don't use from UI
   _removeIngredientLocal: (id: string) => void;
 }
 
 export const useIngredientStore = create<IngredientState>((set) => ({
-  ingredients: null,
-  isLoading: false,
+  ingredients: [],
+  status: 'idle',
   error: null,
 
-  reset: () => set({ ingredients: null, isLoading: false, error: null }),
+  reset: () => set({ ingredients: [], status: 'idle', error: null }),
 
-  setLoading: (value) => set({ isLoading: value }),
-  setError: (value) => set({ error: value }),
-  setIngredients: (value) => set({ ingredients: value }),
-  appendIngredient: (value) =>
-    set((state) => ({
-      ingredients: state.ingredients ? [...state.ingredients, value] : [value],
-    })),
-  // don't use from UI
+  startLoading: () => set({ status: 'loading', error: null }),
+  setLoaded: (value) => set({ ingredients: value, status: 'success', error: null }),
+  setFailed: (message) => set({ status: 'error', error: message }),
+
+  appendIngredient: (value) => set((state) => ({ ingredients: [...state.ingredients, value] })),
+
   _removeIngredientLocal: (id) =>
-    set((state) => ({
-      ingredients: (state.ingredients ?? []).filter((i) => i.id !== id),
-    })),
+    set((state) => ({ ingredients: state.ingredients.filter((i) => i.id !== id) })),
 }));

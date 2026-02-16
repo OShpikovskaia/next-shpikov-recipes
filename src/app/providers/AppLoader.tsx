@@ -16,10 +16,10 @@ interface AppLoaderProps {
 const AppLoader = ({ children }: AppLoaderProps) => {
   const { data: session, status } = useSession();
 
-  const setAuthState = useAuthStore((state) => state.setAuthState);
+  const setAuthState = useAuthStore((s) => s.setAuthState);
 
-  const resetIngredients = useIngredientStore((state) => state.reset);
-  const ingredients = useIngredientStore((state) => state.ingredients);
+  const resetIngredients = useIngredientStore((s) => s.reset);
+  const ingredientStatus = useIngredientStore((s) => s.status); // 'idle' | 'loading' | 'success' | 'error'
 
   const { loadIngredients } = useIngredientActions();
 
@@ -36,11 +36,14 @@ const AppLoader = ({ children }: AppLoaderProps) => {
     }
 
     if (status === AUTH_STATUS.AUTHENTICATED) {
-      if (!session?.user?.id) return;
+      const userId = session?.user?.id;
+      if (!userId) return;
 
-      if (ingredients === null) void loadIngredients();
+      if (ingredientStatus === 'idle') {
+        void loadIngredients();
+      }
     }
-  }, [status, session?.user?.id, ingredients, loadIngredients, resetIngredients]);
+  }, [status, session?.user?.id, ingredientStatus, loadIngredients, resetIngredients]);
 
   return <>{children}</>;
 };

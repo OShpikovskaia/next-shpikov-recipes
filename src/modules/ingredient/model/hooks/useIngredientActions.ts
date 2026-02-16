@@ -11,15 +11,14 @@ type AddResult = { success: true; ingredient: IIngredient } | { success: false; 
 type RemoveResult = { success: true } | { success: false; error: string };
 
 export const useIngredientActions = () => {
-  const setLoading = useIngredientStore((state) => state.setLoading);
-  const setError = useIngredientStore((state) => state.setError);
-  const setIngredients = useIngredientStore((state) => state.setIngredients);
-  const appendIngredient = useIngredientStore((state) => state.appendIngredient);
+  const startLoading = useIngredientStore((s) => s.startLoading);
+  const setLoaded = useIngredientStore((s) => s.setLoaded);
+  const setFailed = useIngredientStore((s) => s.setFailed);
+
+  const appendIngredient = useIngredientStore((s) => s.appendIngredient);
 
   const addIngredient = useCallback(
     async (formData: IngredientsFormData): Promise<AddResult> => {
-      setError(null);
-
       try {
         const result = await createIngredient(formData);
 
@@ -29,65 +28,65 @@ export const useIngredientActions = () => {
         }
 
         const message = result.error ?? 'Ingredient create error';
-        setError(message);
+        setFailed(message);
         return { success: false, error: message };
       } catch {
         const message = 'Ingredient create error';
-        setError(message);
+        setFailed(message);
         return { success: false, error: message };
       }
     },
-    [setError, appendIngredient],
+    [appendIngredient, setFailed],
   );
 
   const loadIngredients = useCallback(async (): Promise<LoadResult> => {
-    setLoading(true);
-    setError(null);
+    startLoading();
 
     try {
       const result = await getIngredients();
 
       if (result.success) {
-        setIngredients(result.ingredients);
+        setLoaded(result.ingredients);
         return { success: true, ingredients: result.ingredients };
       }
 
       const message = result.error ?? 'Get ingredients error';
-      setIngredients([]);
-      setError(message);
+      setFailed(message);
       return { success: false, error: message };
-    } finally {
-      setLoading(false);
+    } catch {
+      const message = 'Get ingredients error';
+      setFailed(message);
+      return { success: false, error: message };
     }
-  }, [setLoading, setError, setIngredients]);
+  }, [startLoading, setLoaded, setFailed]);
 
   const removeIngredient = useCallback(
     async (id: string): Promise<RemoveResult> => {
-      setError(null);
-
       const prev = useIngredientStore.getState().ingredients;
+
+      useIngredientStore.getState()._removeIngredientLocal(id);
 
       try {
         const result = await deleteIngredient(id);
 
         if (result.success) {
-          useIngredientStore.getState()._removeIngredientLocal(id);
-
           return { success: true };
         }
 
-        if (prev) setIngredients(prev);
+        // rollback
+        setLoaded(prev);
         const message = result.error ?? 'Delete ingredient error';
-        setError(message);
+        setFailed(message);
         return { success: false, error: message };
       } catch {
-        if (prev) setIngredients(prev);
+        // rollback
+        setLoaded(prev);
         const message = 'Delete ingredient error';
-        setError(message);
+        setFailed(message);
         return { success: false, error: message };
       }
     },
-    [setError, setIngredients],
+    [setLoaded, setFailed],
   );
 
   return useMemo(
