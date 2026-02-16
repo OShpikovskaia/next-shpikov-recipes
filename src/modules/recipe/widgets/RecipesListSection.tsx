@@ -7,6 +7,7 @@ import { Button } from '@heroui/button';
 
 import { useAuthStore } from '@/modules/auth/model/store';
 import RecipeCard from '@/modules/recipe/ui/RecipeCard';
+import { AUTH_STATUS } from '@/shared/model/auth-status';
 import EmptyState from '@/shared/ui/EmptyState';
 import { ListCountInfo } from '@/shared/ui/ListCountInfo';
 import { SearchBar } from '@/shared/ui/SearchBar';
@@ -17,12 +18,25 @@ import { RecipeFilterTabs } from '../ui/RecipeFilterTabs';
 
 interface RecipesListSectionProps {
   initialRecipes: IRecipe[];
+  isAuthInitial?: boolean;
+  currentUserIdInitial?: string | null;
 }
 
-const RecipesListSection: FC<RecipesListSectionProps> = ({ initialRecipes }) => {
-  const isAuth = useAuthStore((state) => state.isAuth);
-  const session = useAuthStore((state) => state.session);
-  const currentUserId = session?.user?.id ?? null;
+const RecipesListSection: FC<RecipesListSectionProps> = ({
+  initialRecipes,
+  isAuthInitial,
+  currentUserIdInitial,
+}) => {
+  const storeIsAuth = useAuthStore((s) => s.isAuth);
+  const storeStatus = useAuthStore((s) => s.status);
+  const storeSession = useAuthStore((s) => s.session);
+
+  const isHydratingAuth = storeStatus === AUTH_STATUS.LOADING;
+
+  const isAuth = isHydratingAuth ? (isAuthInitial ?? false) : storeIsAuth;
+  const currentUserId = isHydratingAuth
+    ? (currentUserIdInitial ?? null)
+    : (storeSession?.user?.id ?? null);
 
   const recipes = initialRecipes;
 

@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import AppLoader from '@/app/providers/AppLoader';
 import Providers from '@/app/providers/Providers';
+import { auth } from '@/modules/auth/model/auth';
 import { AuthHeader } from '@/modules/auth/widgets/AuthHeader';
 import { layoutConfig } from '@/shared/config/layout.config';
 import { siteConfig } from '@/shared/config/site.config';
@@ -31,12 +32,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   const { footerHeight } = layoutConfig;
 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} bg-[#fafafa] antialiased`}>
-        <Providers>
+        <Providers session={session}>
           <AppLoader>
             <div className="flex min-h-screen flex-col">
               <AuthHeader />
