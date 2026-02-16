@@ -1,5 +1,7 @@
 # Shpikov's Recipes (Next.js)
 
+[![CI](https://github.com/OShpikovskaia/next-shpikov-recipes/actions/workflows/ci.yml/badge.svg)](https://github.com/OShpikovskaia/next-shpikov-recipes/actions/workflows/ci.yml)
+
 A small full-stack recipes app built with **Next.js App Router**,
 **React 19**, **NextAuth (v5 beta)**, **Prisma**, and **PostgreSQL**.
 
@@ -48,6 +50,14 @@ The project uses a modular feature-based structure:
         lib/              # prisma client and utilities
         model/            # shared models/types
         ui/               # reusable components
+
+---
+
+## Key Technical Solutions
+
+- **Type-safe Server Actions:** End-to-end type safety for server-client communication, leveraging **Zod** for robust schema validation.
+- **Modular Domain-Driven Architecture:** Scalable project structure organized by business domains (Auth, Recipe, Ingredient) to ensure low coupling and high maintainability.
+- **Modern Data Fetching & Rendering:** Utilization of **React 19** and **Next.js App Router** features (Server Components, Streaming) for optimized performance and SEO.
 
 ---
 

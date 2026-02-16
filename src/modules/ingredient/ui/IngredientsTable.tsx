@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { Button } from '@heroui/button';
 import type { SortDescriptor } from '@heroui/react';
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/table';
 import { Tooltip } from '@heroui/tooltip';
@@ -11,11 +10,11 @@ import {
   getCategoryLabel,
   getUnitLabel,
 } from '@/modules/ingredient/model/utils';
-import { TrashIcon } from '@/shared/ui/icons/TrashIcon';
 import { ListCountInfo } from '@/shared/ui/ListCountInfo';
 import { SearchBar } from '@/shared/ui/SearchBar';
 
 import type { IIngredient } from '../model/type';
+import DeleteIngredientButton from './DeleteIngredientButton';
 
 interface IngredientsTableProps {
   rows: IIngredient[];
@@ -26,7 +25,7 @@ interface IngredientsTableProps {
   onSearchChange: (value: string) => void;
   sortDescriptor: SortDescriptor;
   onSortChange: (sort: SortDescriptor) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string) => Promise<void>;
   currentUserId: string | null;
 }
 
@@ -90,7 +89,7 @@ const IngredientsTable = ({
         }
       >
         <TableHeader>
-          <TableColumn key="name" allowsSorting className="min-w-[120px]">
+          <TableColumn key="name" allowsSorting className="min-w-30">
             Name
           </TableColumn>
           <TableColumn key="category" allowsSorting>
@@ -102,7 +101,7 @@ const IngredientsTable = ({
           <TableColumn key="pricePerUnit" allowsSorting>
             Price per unit
           </TableColumn>
-          <TableColumn key="description" className="min-w-[220px]">
+          <TableColumn key="description" className="min-w-55">
             Description
           </TableColumn>
           <TableColumn key="actions">Actions</TableColumn>
@@ -152,21 +151,11 @@ const IngredientsTable = ({
                   <div className="flex items-center justify-end gap-1">
                     <Tooltip color={canDelete ? 'danger' : 'default'} content={tooltipText}>
                       <span className="inline-flex">
-                        <Button
-                          isIconOnly
-                          size="sm"
-                          color="danger"
-                          variant="light"
-                          aria-label={`Delete ingredient ${name}`}
-                          className="rounded-full"
+                        <DeleteIngredientButton
+                          id={id}
+                          onDelete={onDelete}
                           isDisabled={!canDelete}
-                          onPress={() => {
-                            if (!canDelete) return;
-                            onDelete(id);
-                          }}
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </Button>
+                        />
                       </span>
                     </Tooltip>
                   </div>
