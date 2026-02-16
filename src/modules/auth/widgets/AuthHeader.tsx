@@ -7,7 +7,7 @@ import { useAuthStore } from '@/modules/auth/model/store';
 import LoginModal from '@/modules/auth/ui/LoginModal';
 import SignupModal from '@/modules/auth/ui/SignupModal';
 import { siteConfig } from '@/shared/config/site.config';
-import Header from '@/shared/ui/Header';
+import Header from '@/shared/ui/Header/Header';
 
 export const AuthHeader = () => {
   const isAuth = useAuthStore((state) => state.isAuth);
@@ -16,13 +16,6 @@ export const AuthHeader = () => {
 
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-
-  const navItems = siteConfig.navItems.filter((item) => {
-    if (item.href === '/ingredients') {
-      return isAuth;
-    }
-    return true;
-  });
 
   const handleSignout = async () => {
     await signOut({ callbackUrl: '/' });
@@ -39,7 +32,7 @@ export const AuthHeader = () => {
   return (
     <>
       <Header
-        navItems={navItems}
+        navItems={siteConfig.navItems}
         isAuth={isAuth}
         status={status}
         userEmail={session?.user?.email ?? null}
