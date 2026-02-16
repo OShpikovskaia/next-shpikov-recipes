@@ -34,7 +34,11 @@ const RecipeDetails = ({ recipe }: RecipeDetailsProps) => {
       </Button>
 
       <section className="grid gap-6 lg:grid-cols-[minmax(240px,320px)_1fr]">
-        <RecipeImage src={recipe.imageUrl} alt={`Image for recipe "${recipe.name}"`} />
+        <RecipeImage
+          src={recipe.imageUrl}
+          alt={`Image for recipe "${recipe.name}"`}
+          className="rounded-2xl"
+        />
 
         <div className="flex flex-col gap-4">
           <div>
