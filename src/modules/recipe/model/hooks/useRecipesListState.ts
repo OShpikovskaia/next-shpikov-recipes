@@ -18,9 +18,9 @@ interface UseRecipesListStateResult {
   filteredRecipes: IRecipe[];
   publicCount: number;
   myPrivateCount: number;
-  totalInCurrentFilter: number;
+  totalAccessible: number; // New
+  totalInCurrentFilter: number; // tab total
 }
-
 export const useRecipesListState = ({
   recipes,
   isAuth,
@@ -30,7 +30,18 @@ export const useRecipesListState = ({
 }: UseRecipesListStateArgs): UseRecipesListStateResult => {
   const hasRecipes = recipes.length > 0;
 
-  const baseVisibleRecipes = useMemo(() => {
+  // what user can access at all (no tab filter)
+  const accessibleRecipes = useMemo(() => {
+    return getVisibleRecipes({
+      recipes,
+      isAuth,
+      filter: 'all', // Important: no tab here
+      currentUserId,
+    });
+  }, [recipes, isAuth, currentUserId]);
+
+  // what user can access in current tab (no search)
+  const recipesInTab = useMemo(() => {
     return getVisibleRecipes({
       recipes,
       isAuth,
@@ -39,25 +50,29 @@ export const useRecipesListState = ({
     });
   }, [recipes, isAuth, filter, currentUserId]);
 
+  // apply search on top of tab
   const filteredRecipes = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return baseVisibleRecipes;
-    return baseVisibleRecipes.filter((r) => r.name.toLowerCase().includes(q));
-  }, [baseVisibleRecipes, searchQuery]);
+    if (!q) return recipesInTab;
+    return recipesInTab.filter((r) => r.name.toLowerCase().includes(q));
+  }, [recipesInTab, searchQuery]);
 
+  // counts (I’d keep these as "accessible counts" too)
   const { publicCount, myPrivateCount } = useMemo(() => {
-    const publicCount = recipes.filter((r) => r.isPublic).length;
+    const base = accessibleRecipes;
+    const publicCount = base.filter((r) => r.isPublic).length;
     const myPrivateCount = currentUserId
-      ? recipes.filter((r) => !r.isPublic && r.authorId === currentUserId).length
+      ? base.filter((r) => !r.isPublic && r.authorId === currentUserId).length
       : 0;
     return { publicCount, myPrivateCount };
-  }, [recipes, currentUserId]);
+  }, [accessibleRecipes, currentUserId]);
 
   return {
     hasRecipes,
     filteredRecipes,
     publicCount,
     myPrivateCount,
-    totalInCurrentFilter: baseVisibleRecipes.length,
+    totalAccessible: accessibleRecipes.length,
+    totalInCurrentFilter: recipesInTab.length,
   };
 };
