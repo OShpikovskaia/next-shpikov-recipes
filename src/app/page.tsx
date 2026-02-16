@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { auth } from '@/modules/auth/model/auth';
 import { getRecipes } from '@/modules/recipe/model/server-actions';
 import RecipesListSection from '@/modules/recipe/widgets/RecipesListSection';
-import { RecipesListSectionSkeleton } from '@/shared/ui/skeletons/RecipesListSectionSkeleton';
+import { RecipesListSectionSkeleton } from '@/modules/recipe/widgets/RecipesListSection.skeleton';
 
 async function RecipesListSectionData({
   userId,

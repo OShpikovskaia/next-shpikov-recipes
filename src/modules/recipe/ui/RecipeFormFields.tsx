@@ -7,6 +7,7 @@ import { Select, SelectItem } from '@heroui/select';
 import { Switch } from '@heroui/switch';
 
 import { getImageUrlError } from '../model/validators/getImageUrlError';
+import { RecipeImageUrlHint } from './RecipeImageUrlHint';
 
 export interface IngredientField {
   id: string;
@@ -130,20 +131,7 @@ export const RecipeFormFields = ({
           }}
           onChange={(e) => handleImageUrlChange(e.target.value)}
         />
-        <p className="mt-1 text-xs text-gray-500">
-          Find an image on Pexels and paste the{' '}
-          <span className="font-medium">direct image URL</span> (should start with{' '}
-          <span className="font-mono">https://www.pexels.com/search</span>
-          ).{' '}
-          <a
-            href="https://www.pexels.com/search"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline"
-          >
-            Open Pexels
-          </a>
-        </p>
+        <RecipeImageUrlHint />
 
         <Switch
           isSelected={formData.isPublic}
