@@ -93,17 +93,11 @@ const assertCanModifyRecipe = async (recipeId: string, userId: string) => {
 
 type GetRecipesResult = { success: true; recipes: IRecipe[] } | { success: false; error: string };
 
-export const getRecipes = async (): Promise<GetRecipesResult> => {
+export const getRecipes = async (userIdParam?: string | null): Promise<GetRecipesResult> => {
   try {
-    const userId = await getCurrentUserId();
+    const userId = typeof userIdParam !== 'undefined' ? userIdParam : await getCurrentUserId();
 
-    const where = userId
-      ? {
-          OR: [{ isPublic: true }, { authorId: userId }],
-        }
-      : {
-          isPublic: true,
-        };
+    const where = userId ? { OR: [{ isPublic: true }, { authorId: userId }] } : { isPublic: true };
 
     const dbRecipes = await prisma.recipe.findMany({
       where,
@@ -111,9 +105,7 @@ export const getRecipes = async (): Promise<GetRecipesResult> => {
       orderBy: { updatedAt: 'desc' },
     });
 
-    const recipes = dbRecipes.map(mapDbRecipeToRecipe);
-
-    return { success: true, recipes };
+    return { success: true, recipes: dbRecipes.map(mapDbRecipeToRecipe) };
   } catch {
     return { success: false, error: 'Get recipes error' };
   }

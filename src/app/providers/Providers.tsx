@@ -12,7 +12,7 @@ interface ProvidersProps {
 
 const Providers = ({ children, session }: ProvidersProps) => {
   return (
-    <SessionProvider session={session}>
+    <SessionProvider session={session} refetchOnWindowFocus={false} refetchInterval={0}>
       <HeroUIProvider>{children}</HeroUIProvider>
     </SessionProvider>
   );
