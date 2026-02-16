@@ -11,13 +11,21 @@ interface ListCountInfoProps {
 }
 
 export const ListCountInfo: FC<ListCountInfoProps> = ({ total, visible, label, className }) => {
-  if (total === 0) return null;
+  if (total <= 0) return null;
+
+  const safeVisible = Math.min(Math.max(visible, 0), total);
+  const isFullListVisible = safeVisible === total;
 
   return (
     <p className={clsx('text-xs', className)}>
-      Showing <span className="font-semibold">{visible}</span>
-      {' of '}
-      <span className="font-semibold">{total}</span> {label}
+      Showing <span className="font-semibold">{total === 0 ? 0 : safeVisible}</span>
+      {!isFullListVisible && (
+        <>
+          {' of '}
+          <span className="font-semibold">{total}</span>
+        </>
+      )}{' '}
+      {label}
     </p>
   );
 };

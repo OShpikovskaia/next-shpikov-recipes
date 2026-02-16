@@ -86,9 +86,8 @@ const RecipesListSection: FC<RecipesListSectionProps> = ({
               {' · '}My private:{' '}
               <span className="font-semibold text-gray-700">{myPrivateCount}</span>
             </span>
+            <RecipeFilterTabs value={filter} onChange={setFilter} />
           </div>
-
-          <RecipeFilterTabs value={filter} onChange={setFilter} />
         </>
       )}
 
