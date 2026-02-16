@@ -16,15 +16,15 @@ const RecipeImage = ({ src, alt, className }: RecipeImageProps) => {
   const showRemote = Boolean(src?.trim()) && !failed;
 
   return (
-    <div className={cn(['relative aspect-4/3 w-full overflow-hidden bg-[#EFF6FF]', className])}>
+    <div className={cn('relative aspect-[4/3] w-full overflow-hidden bg-[#EFF6FF]', className)}>
       {showRemote ? (
         <Image
           src={src!.trim()}
           alt={alt}
           fill
           className="object-cover"
-          sizes="(min-width: 1024px) 320px, 100vw"
-          priority
+          sizes="(min-width: 1024px) 320px, (min-width: 768px) 50vw, 100vw"
+          loading="lazy"
           onError={() => setFailed(true)}
         />
       ) : (
@@ -33,8 +33,7 @@ const RecipeImage = ({ src, alt, className }: RecipeImageProps) => {
           alt="Recipe image placeholder"
           fill
           className="object-contain"
-          sizes="(min-width: 1024px) 320px, 100vw"
-          priority={false}
+          sizes="(min-width: 1024px) 320px, (min-width: 768px) 50vw, 100vw"
           loading="lazy"
         />
       )}
