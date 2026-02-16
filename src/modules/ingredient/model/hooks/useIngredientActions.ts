@@ -66,12 +66,15 @@ export const useIngredientActions = () => {
       setError(null);
 
       const prev = useIngredientStore.getState().ingredients;
-      useIngredientStore.getState()._removeIngredientLocal(id);
 
       try {
         const result = await deleteIngredient(id);
 
-        if (result.success) return { success: true };
+        if (result.success) {
+          useIngredientStore.getState()._removeIngredientLocal(id);
+
+          return { success: true };
+        }
 
         if (prev) setIngredients(prev);
         const message = result.error ?? 'Delete ingredient error';
